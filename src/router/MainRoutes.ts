@@ -66,6 +66,7 @@ const MainRoutes = {
             path: '/empresa/profile/:id',
             component: () => import('@/views/apps/empresa-profile/Profile.vue')
         },
+        // LOCACIONES
         {
             name: 'Paises',
             path: '/paises',
@@ -85,6 +86,18 @@ const MainRoutes = {
             name: 'Ciudades',
             path: '/ciudades',
             component: () => import('@/views/apps/ciudad/Ciudad.vue')
+        },
+        // RELIGION
+        {
+            name: 'Religion',
+            path: '/religion',
+            component: () => import('@/views/apps/religion/Religion.vue')
+        },
+        // PACIENTES
+        {
+            name: 'Pacientes',
+            path: '/pacientes',
+            component: () => import('@/views/apps/paciente/Paciente.vue')
         },
         // ADMINISTRACIÓN
         {

@@ -130,6 +130,11 @@ const sidebarItem: menu[] = [
         ]
     },
     {
+        title: 'Pacientes',
+        icon: CircleIcon,
+        to: '/pacientes'
+    },
+    {
         title: 'Menu Level',
         icon: MenuIcon,
         to: '#',

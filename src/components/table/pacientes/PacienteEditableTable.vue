@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useCiudadStore } from '@/stores/apps/locaciones/ciudad';
+import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
 
-import { useMunicipioStore } from '@/stores/apps/locaciones/municipio';
+import { useReligionStore } from '@/stores/apps/religiones/religion';
 
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
-const store = useCiudadStore();
-const MunicipioStore = useMunicipioStore();
+const store = usePacienteStore();
+const ReligionStore = useReligionStore();
 
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
@@ -15,16 +15,16 @@ const itemToDelete = ref(null);
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    store.fetchCiudades();
-    MunicipioStore.fetchMunicipios();
+    store.fetchPacientes();
+    ReligionStore.fetchReligiones();
 });
 
-const getCiudades: any = computed(() => {
-    return store.ciudades;
+const getPacientes: any = computed(() => {
+    return store.pacientes;
 });
 
-const getMunicipios: any = computed(() => {
-    return MunicipioStore.municipios.sort((a: any, b: any) => {
+const getReligiones: any = computed(() => {
+    return ReligionStore.religiones.sort((a: any, b: any) => {
         const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
         const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
 
@@ -40,8 +40,8 @@ const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
 const editedIndex = ref(-1);
-const items = ref(getCiudades);
-const municipios = ref(getMunicipios);
+const items = ref(getPacientes);
+const religiones = ref(getReligiones);
 
 interface Alert {
     show: boolean;
@@ -55,21 +55,37 @@ const alert = ref<Alert>({
     message: ''
 });
 
+
 const editedItem = ref({
     id: '',
     nombre: '',
-    municipio_id: null
+    apellido1: '',
+    apellido2: '',
+    religion_id: null,
+    f_nacimiento: '',
+    domicilio: '',
+    foto_perfil: ''
 });
 
 const defaultItem = ref({
     id: '',
     nombre: '',
-    municipio_id: null
+    apellido1: '',
+    apellido2: '',
+    religion_id: null,
+    f_nacimiento: '',
+    domicilio: '',
+    foto_perfil: ''
 });
 
 const headers: any = ref([
-    { title: 'Ciudad', align: 'start', key: 'nombre' },
-    { title: 'Municipio', align: 'start', key: 'nombre_municipio' },
+    { title: 'Nombre', align: 'start', key: 'nombre' },
+    { title: 'Ape Pat', align: 'start', key: 'apellido1' },
+    { title: 'Ape Mat', align: 'start', key: 'apellido2' },
+    { title: 'Religión', align: 'start', key: 'nombre_religion' },
+    { title: 'Fecha de Nacimiento', align: 'start', key: 'f_nacimiento' },
+    { title: 'Domicilio', align: 'start', key: 'domicilio' },
+    //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
 ]);
 
@@ -85,7 +101,7 @@ function showAlert(type: AlertType, message: string) {
 }
 
 function editItem(item: any) {
-    editedIndex.value = store.municipios.indexOf(item as (typeof store.municipios)[0])
+    editedIndex.value = store.religiones.indexOf(item as (typeof store.religiones)[0])
     editedItem.value = Object.assign({}, item);
     dialog.value = true;
 }
@@ -97,18 +113,18 @@ function deleteItem(item: any) {
 
 async function confirmDelete() {
     try {
-        Object.assign(store.ciudad, itemToDelete.value);
+        Object.assign(store.paciente, itemToDelete.value);
         const response = store.delete();
 
         response.then(() => {
-            store.fetchCiudades();
-            showAlert('success', 'Ciudad eliminada con éxito');
+            store.fetchPacientes();
+            showAlert('success', 'Paciente eliminado con éxito');
         }).catch(error => {
-            showAlert('error', 'Error al eliminar la Ciudad');
+            showAlert('error', 'Error al eliminar el Paciente');
         });
 
     } catch (error) {
-        showAlert('error', 'Error al eliminar la Ciudad');
+        showAlert('error', 'Error al eliminar el Paciente');
     } finally {
         deleteDialog.value = false;
         itemToDelete.value = null;
@@ -116,20 +132,20 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.ciudad, editedItem.value);
+    Object.assign(store.paciente, editedItem.value);
     let response;
-    if (store.ciudad.id) {
+    if (store.paciente.id) {
         response = store.update();
-        showAlert('success', 'Ciudad actualizada con éxito');
+        showAlert('success', 'Paciente actualizado con éxito');
     } else {
         response = store.store();
-        showAlert('success', 'Ciudad guardada con éxito');
+        showAlert('success', 'Paciente guardado con éxito');
     }
 
     response.then(() => {
-        store.fetchCiudades();
+        store.fetchPacientes();
     }).catch(error => {
-        showAlert('error', 'Error al guardar la Ciudad');
+        showAlert('error', 'Error al guardar el Paciente');
     });
 
     editedItem.value = Object.assign({}, defaultItem.value);
@@ -151,11 +167,11 @@ function close() {
 }
 
 function refresh() {
-    store.fetchCiudades();
+    store.fetchPacientes();
 }
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Nueva Ciudad' : 'Editar Ciudad';
+    return editedIndex.value === -1 ? 'Nuevo Paciente' : 'Editar Paciente';
 });
 </script>
 
@@ -187,7 +203,7 @@ const formTitle = computed(() => {
         <v-card>
             <v-card-title class="headline">Confirmar Eliminación</v-card-title>
             <v-card-text>
-                ¿Estás seguro de que deseas eliminar esta Ciudad?
+                ¿Estás seguro de que deseas eliminar este Paciente?
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -209,7 +225,7 @@ const formTitle = computed(() => {
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="ml-auto">
-                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva ciudad
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo paciente
                     </v-btn>
                 </template>
                 <v-card>
@@ -225,20 +241,54 @@ const formTitle = computed(() => {
                                         variant="outlined" 
                                         hide-details 
                                         v-model="editedItem.nombre" 
-                                        label="Ciudad">
+                                        label="Paciente">
                                     </v-text-field>
                                 </v-col>
-                                <v-col cols="12" sm="12">
-                                    <v-autocomplete
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.apellido1" 
+                                        label="Apellido">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.apellido2" 
+                                        label="Apellido2">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-select
                                         variant="outlined"
                                         hide-details
-                                        :items="municipios"
+                                        :items="religiones"
                                         item-title="nombre"
                                         item-value="id"
-                                        v-model="editedItem.municipio_id"
-                                        label="Municipio"
-                                    ></v-autocomplete>
+                                        v-model="editedItem.religion_id"
+                                        label="Religión"
+                                    ></v-select>
                                 </v-col>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.f_nacimiento" 
+                                        label="Fecha de Nacimiento">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.domicilio" 
+                                        label="Domicilio">
+                                    </v-text-field>
+                                </v-col>
+                                
+                              
                             </v-row>
                         </v-form>
                     </v-card-text>
@@ -246,7 +296,7 @@ const formTitle = computed(() => {
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.municipio_id == ''" variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.apellido1 == '' || editedItem.apellido2 == '' || editedItem.religion_id == '' || editedItem.f_nacimiento == '' || editedItem.domicilio == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
