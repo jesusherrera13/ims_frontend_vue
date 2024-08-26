@@ -27,6 +27,11 @@ const MainRoutes = {
             component: () => import('@/views/apps/accesos/Acceso.vue')
         },
         {
+            name: 'Perfiles',
+            path: '/perfiles',
+            component: () => import('@/views/apps/perfiles/Perfiles.vue')
+        },
+        {
             name: 'Usuario Perfil',
             path: '/user/profile/:id',
             component: () => import('@/views/apps/user-profile/Profile.vue')
