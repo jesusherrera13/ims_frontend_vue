@@ -75,6 +75,11 @@ const sidebarItem: menu[] = [
                 title: 'Régimen',
                 icon: BrandChromeIcon,
                 to: '/regimen'
+            },
+            {
+                title: 'Perfiles',
+                icon: BrandChromeIcon,
+                to: '/perfiles'
             }
         ]
     },
