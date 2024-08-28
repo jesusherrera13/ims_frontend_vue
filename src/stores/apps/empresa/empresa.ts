@@ -11,9 +11,9 @@ export const useEmpresaStore = defineStore({
         empresas: [],
         empresa: {
             id: '',
-            employee_name: '',
-            employee_last_name: '',
-            employee_second_last_name: ''
+            razon_social: '',
+            nombre_comercial: '',
+            rfc: ''
         },
         params: {},
         is_loading: false
@@ -28,7 +28,7 @@ export const useEmpresaStore = defineStore({
         async fetchEmpresas() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/empresa`, { params: this.params });
+                const response = await axiosClient.get(`/empresas`, { params: this.params });
                 this.empresas = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -40,7 +40,7 @@ export const useEmpresaStore = defineStore({
         async store() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.post(`/empresa`, this.empresa);
+                const response = await axiosClient.post(`/empresas`, this.empresa);
                 this.empresa = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -52,7 +52,7 @@ export const useEmpresaStore = defineStore({
         async show() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/empresa/${this.empresa.id}`);
+                const response = await axiosClient.get(`/empresas/${this.empresa.id}`);
                 this.empresa = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -64,7 +64,7 @@ export const useEmpresaStore = defineStore({
         async update() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.put(`/empresa/${this.empresa.id}`, this.empresa);
+                const response = await axiosClient.put(`/empresas/${this.empresa.id}`, this.empresa);
                 this.empresa = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -75,7 +75,7 @@ export const useEmpresaStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/empresa/${this.empresa.id}`);
+                const response = await axiosClient.delete(`/empresas/${this.empresa.id}`);
                 this.is_loading = false;
             } catch (error) {
                 alert(error);

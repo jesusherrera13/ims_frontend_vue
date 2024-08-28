@@ -177,7 +177,7 @@ function save() {
     if (!store.municipios.some((municipio:any) => municipio.id === municipioData.id)) {
         store.saveMunicipio(municipioData);
     }
-    if (!store.ciudades.some((ciudad:any) => ciudad.id === ciudadData.id)) {
+    if (!store.ciudades.some((ciudad:any) => ciudad.id === ciudadData.id)) { // si no existe una ciudad con el mismo id en la lista de ciudades en el store, entonces guarda la ciudad
         store.saveCiudad(ciudadData);
     }
 

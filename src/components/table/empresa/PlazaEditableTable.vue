@@ -208,6 +208,7 @@ function goTo(item: any) {}
                                         item-value="id"
                                         v-model="editedItem.empresa_id"
                                         label="Empresa"
+
                                     ></v-autocomplete>
                                 </v-col>
                             </v-row>

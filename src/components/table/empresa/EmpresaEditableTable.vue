@@ -78,12 +78,12 @@ function editItem(item: any) {
 }
 function deleteItem(item: any) {
     if (confirm('Are you sure you want to delete this item?')) {
-        Object.assign(store.empresa, item);
+        Object.assign(store.empresa, item); //asigna el item seleccionado a la variable empresa del store    
         console.log(item);
 
-        let response = store.delete();
-        response.then(() => {
-            store.fetchEmpresas();
+        let response = store.delete(); //llama al metodo delete del store
+        response.then(() => { //si la respuesta es exitosa, se actualiza la tabla
+            store.fetchEmpresas(); //llama al metodo fetchEmpresas del store
         });
     }
 }
@@ -91,19 +91,19 @@ function deleteItem(item: any) {
 function close() {
     dialog.value = false;
     setTimeout(() => {
-        editedItem.value = Object.assign({}, defaultItem.value);
-        editedIndex.value = -1;
+        editedItem.value = Object.assign({}, defaultItem.value); //limpia el formulario
+        editedIndex.value = -1; //resetea el index
     }, 300);
 }
 
 function save() {
-    Object.assign(store.empresa, editedItem.value);
+    Object.assign(store.empresa, editedItem.value); //asigna el valor del formulario a la variable empresa del store
 
     console.log(editedItem.value);
 
-    let response;
-    if (store.empresa.id) response = store.update();
-    else response = store.store();
+    let response; //variable para almacenar la respuesta del store
+    if (store.empresa.id) response = store.update(); //si el id de la empresa es diferente de null, llama al metodo update del store
+    else response = store.store(); //si el id de la empresa es null, llama al metodo store del store
 
     response.then(() => {
         store.fetchEmpresas();
@@ -119,7 +119,7 @@ function refresh() {
 
 function goTo(item: any) {
     // console.log(item);
-    router.push(`/empresa/profile/${item.id}`);
+    router.push(`/empresa/profile/${item.id}`); //sirve para redirigir a la vista de perfil de la empresa seleccionada en la tabla
 }
 
 //Computed Property
