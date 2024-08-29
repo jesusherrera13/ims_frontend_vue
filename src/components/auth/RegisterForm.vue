@@ -20,7 +20,7 @@ const passwordRules = ref([
 ]);
 const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid']);
 const employee_id = ref('');
-const employeeIdRules = ref([(v: string) => !!v || 'El número de empleado es requiredo']);
+const employeeIdRules = ref([(v: string) => !!v || 'El nombre de empleado es requiredo']);
 
 const form = ref();
 const myButtonElement = ref<HTMLButtonElement | null>(null);
@@ -98,10 +98,8 @@ const submitForm = () => {
         </div>
     </div>
     <v-form ref="form" v-model="valid" lazy-validation action="/pages/boxedlogin" class="mt-5">
-        <v-label class="text-subtitle-1 font-weight-medium pb-2">Número de empleado</v-label>
+        <v-label class="text-subtitle-1 font-weight-medium pb-2">Nombre de usuario</v-label>
         <VTextField v-model="employee_id" :rules="employeeIdRules" required></VTextField>
-        <v-label class="text-subtitle-1 font-weight-medium pb-2">RFC</v-label>
-        <VTextField v-model="rfc" :rules="rfcRules" required></VTextField>
         <v-label class="text-subtitle-1 font-weight-medium pb-2">Email</v-label>
         <VTextField v-model="email" :rules="emailRules" required></VTextField>
         <v-label class="text-subtitle-1 font-weight-medium pb-2">Password</v-label>
