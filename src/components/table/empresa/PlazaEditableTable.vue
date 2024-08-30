@@ -4,6 +4,8 @@ import { usePlazaStore } from '@/stores/apps/plaza';
 import { useEmpresaStore } from '@/stores/apps/empresa/empresa';
 import { useCompaniaStore } from '@/stores/apps/empresa/compania';
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
+import { useCompanyStore } from '@/stores/apps/company';
+//import { on } from 'events';
 
 const store = usePlazaStore();
 const storeEmpresa = useEmpresaStore();
@@ -11,8 +13,9 @@ const storeCompania = useCompaniaStore();
 
 onMounted(() => {
     store.fetchPlazas();
-    storeEmpresa.fetchEmpresas();
+    //storeEmpresa.fetchEmpresas();
     storeCompania.fetchCompanias();
+
 });
 
 /* const getPlazas = computed(() => {
@@ -73,20 +76,24 @@ const items = ref(getPlazas);
 const empresas = ref(getEmpresas);
 const companias = ref(getCompanias);
 
+//variable reactiva para el select
+const selectedCompany = ref(null);
+const selectedEmpresa = ref(null);
+
 const editedIndex = ref(-1);
 const editedItem = ref({
     id: '',
     nombre: '',
-    empresa_id: '',
-    company_id: '',
+    empresa_id: null,
+    company_id: null,
     created_by: '',
     created_at: ''
 });
 const defaultItem = ref({
     id: '',
     nombre: '',
-    empresa_id: '',
-    company_id: '',
+    empresa_id: null,
+    company_id: null,
     created_by: '',
     created_at: ''
 });
@@ -105,9 +112,23 @@ const filteredList = computed<Array<{ id: number; nombre: string; created_by: st
 });
 
 function editItem(item: any) {
-    editedIndex.value = store.plazas.findIndex((plaza: { id: number }) => plaza.id === item.id);
+    console.log('item', item);
+  editedIndex.value = store.plazas.findIndex((plaza: { id: number }) => plaza.id === item.id);
     editedItem.value = Object.assign({}, item, { id: item.id.toString() });
+    selectedCompany.value = editedItem.value.company_id;
+    selectedEmpresa.value = editedItem.value.empresa_id;
     dialog.value = true;
+    console.log('editedItem', editedItem.value.company_id);
+    console.log('editedItem2', editedItem.value.empresa_id);
+
+    //console.log('store.plaza', store.plaza); 
+
+/*     editedItem.value = Object.assign({}, item);
+    if (editedItem.value.company_id) {
+        selectedCompany.value = editedItem.value.company_id;
+        storeCompania.fetchEmpresas(editedItem.value.company_id);
+        dialog.value = true;
+} */
 }
 
 function deleteItem(item: any) {
@@ -145,7 +166,7 @@ const formTitle = computed(() => {
 });
 
 function empresaReset() {
-    editedItem.value.empresa_id = '';
+    editedItem.value.empresa_id = null;
 }
 
 function refresh() {
@@ -153,6 +174,13 @@ function refresh() {
 }
 
 function goTo(item: any) {}
+
+
+function onCompanyChange(newEmpresaId:any) {
+  if(newEmpresaId){
+    storeCompania.fetchEmpresas(newEmpresaId);
+  }
+}
 </script>
 
 <template>
@@ -187,7 +215,7 @@ function goTo(item: any) {}
                                         label="Razón social"
                                     ></v-text-field>
                                 </v-col>
-                                <v-col cols="12">
+                            <!--     <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined"
                                         hide-details
@@ -196,19 +224,19 @@ function goTo(item: any) {}
                                         item-value="id"
                                         v-model="editedItem.company_id"
                                         label="Compañía"
-                                        @update:modelValue="empresaReset"
+                                        @update:modelValue="onCompanyChange" 
                                     ></v-autocomplete>
-                                </v-col>
+                                </v-col> -->
                                 <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined"
                                         hide-details
-                                        :items="empresas"
+                                        :items="companias"
                                         item-title="razon_social"
                                         item-value="id"
-                                        v-model="editedItem.empresa_id"
-                                        label="Empresa"
-
+                                        v-model="editedItem.company_id"
+                                        label="empresa"
+                                        @update:modelValue="onCompanyChange" 
                                     ></v-autocomplete>
                                 </v-col>
                             </v-row>

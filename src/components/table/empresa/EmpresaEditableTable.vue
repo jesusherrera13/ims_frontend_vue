@@ -55,14 +55,32 @@ const editedItem = ref({
     id: '',
     razon_social: '',
     nombre_comercial: '',
-    rfc: ''
+    rfc: '',
+    calle: '',
+    numero_exterior: '',
+    numero_interior: '',
+    registro_patronal: '',
+
+    pais_id: null,
+    municipio_id: null,
+    ciudad_id: null,
+    estado_id: null
 });
 
 const defaultItem = ref({
     id: '',
     razon_social: '',
     nombre_comercial: '',
-    rfc: ''
+    rfc: '',
+    calle: '',
+    numero_exterior: '',
+    numero_interior: '',
+    registro_patronal: '',
+
+    pais_id: null,
+    municipio_id: null,
+    ciudad_id: null,
+    estado_id: null
 });
 
 const headers: any = ref([
