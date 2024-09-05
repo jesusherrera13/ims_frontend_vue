@@ -130,9 +130,24 @@ const sidebarItem: menu[] = [
         ]
     },
     {
+        title: 'Religiónes',
+        icon: CircleIcon,
+        to: '/religiones'
+    },
+    {
         title: 'Pacientes',
         icon: CircleIcon,
         to: '/pacientes'
+    },
+    {
+        title: 'Especialidades',
+        icon: CircleIcon,
+        to: '/especialidades'
+    },
+    {
+        title: 'Médicos',
+        icon: CircleIcon,
+        to: '/medicos'
     },
     {
         title: 'Menu Level',

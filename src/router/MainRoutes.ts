@@ -89,8 +89,8 @@ const MainRoutes = {
         },
         // RELIGION
         {
-            name: 'Religion',
-            path: '/religion',
+            name: 'Religiones',
+            path: '/religiones',
             component: () => import('@/views/apps/religion/Religion.vue')
         },
         // PACIENTES
@@ -99,6 +99,19 @@ const MainRoutes = {
             path: '/pacientes',
             component: () => import('@/views/apps/paciente/Paciente.vue')
         },
+        // ESPECIALIDAD
+        {
+            name: 'Especialidad',
+            path: '/especialidad',
+            component: () => import('@/views/apps/especialidad/Especialidad.vue')
+        },
+        // MÉDICOS
+        {
+            name: 'Medicos',
+            path: '/medicos',
+            component: () => import('@/views/apps/medico/Medico.vue')
+        },
+        
         // ADMINISTRACIÓN
         {
             name: 'Empleados',
