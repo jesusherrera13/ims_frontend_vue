@@ -123,7 +123,7 @@ const headers: any = ref([
     { title: 'Ciudad', align: 'start', key: 'nombre_ciudad' },
     { title: 'Estado', align: 'start', key: 'nombre_estado' },
     { title: 'Genero', align: 'start', key: 'genero' },
-    { title: 'ID Esp', align: 'start', key: 'especialidad_id' },
+    { title: 'ID Esp', align: 'start', key: 'nombre_especialidad' },
     //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
 ]);
