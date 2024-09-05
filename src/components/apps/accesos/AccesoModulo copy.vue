@@ -13,7 +13,9 @@ onMounted(() => {
 });
 
 const getModulos: any = computed(() => {
-    return storeModulo.modulos.map((item) => item); // itera sobre los módulos y los retorna en un array nuevo para que se actualice la vista al cambiar el valor
+    return storeModulo.modulos.map((item) => {
+        return item;
+    });
 });
 
 const props = defineProps({
@@ -22,9 +24,9 @@ const props = defineProps({
 
 const selected = ref([]);
 
-function handleClick(e: any, row: any) { // row es el módulo seleccionado
-    let user_modules = []; // Array que almacena los módulos seleccionados por el usuario
-    const _checked = e.target.checked; // Obtiene el estado del checkbox 
+function handleClick(e: any, row: any) {
+    let user_modules = [];
+    const _checked = e.target.checked;
 
     // Selecciona/deselecciona los hijos
     let inputElements = document.getElementsByClassName(`class-${row.id}`);
@@ -35,8 +37,6 @@ function handleClick(e: any, row: any) { // row es el módulo seleccionado
     // Selecciona el padre si se selecciona un hijo
     if (_checked) {
         selectParent(row);
-    } else {
-        deselectChild(row); // Si se deselecciona, deseleccionar todos los hijos
     }
 
     inputElements = document.getElementsByClassName('chk-access-modules');
@@ -45,10 +45,10 @@ function handleClick(e: any, row: any) { // row es el módulo seleccionado
         if (_checkbox.checked) user_modules.push(_checkbox.getAttribute('dbid'));
     }
 
-    storeModulo.storeUserModules(store.user.id, user_modules); // Almacena los módulos seleccionados por el usuario
+    storeModulo.storeUserModules(store.user.id, user_modules);
 }
 
-// Función que selecciona todos los padres ascendentes
+// Función que selecciona el padre
 function selectParent(row: any) {
     if (row.parent_id) {
         const parentElement = document.querySelector(`.chk-access-modules[dbid="${row.parent_id}"]`) as HTMLInputElement;
@@ -58,14 +58,6 @@ function selectParent(row: any) {
             const parentRow = storeModulo.modulos.find((modulo) => modulo.id === row.parent_id);
             if (parentRow) selectParent(parentRow);
         }
-    }
-}
-
-// Función que deselecciona todos los hijos descendentes
-function deselectChild(row: any) {
-    const childElements = document.getElementsByClassName(`class-${row.id}`);
-    for (let i = 0; i < childElements.length; i++) {
-        (childElements[i] as HTMLInputElement).checked = false;
     }
 }
 
@@ -81,7 +73,9 @@ watch([() => store.user.id], () => {
 });
 
 watch([() => storeModulo.access_user_modules], () => {
-    const tmp = storeModulo.access_user_modules.map((item: any) => item.modulo_id);
+    const tmp = storeModulo.access_user_modules.map((item: any) => {
+        return item.modulo_id;
+    });
 
     const inputElements = document.getElementsByClassName('chk-access-modules');
 
