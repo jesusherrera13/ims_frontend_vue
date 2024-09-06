@@ -22,9 +22,9 @@ const props = defineProps({
 
 const selected = ref([]);
 
-function handleClick(e: any, row: any) { // row es el módulo seleccionado
+function handleClick(e: any, row: any) { // row es el módulo seleccionado y e es el evento
     let user_modules = []; // Array que almacena los módulos seleccionados por el usuario
-    const _checked = e.target.checked; // Obtiene el estado del checkbox 
+    const _checked = e.target.checked; // Obtiene el estado del checkbox el checked.checkbox sirve para saber si el checkbox está seleccionado o no
 
     // Selecciona/deselecciona los hijos
     let inputElements = document.getElementsByClassName(`class-${row.id}`);
