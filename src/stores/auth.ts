@@ -19,16 +19,21 @@ export const useAuthStore = defineStore({
     actions: {
         async login(email: string, password: string) {
             const response = await axiosClient.post(`/login`, { email: email, password: password });
+            if (response.data.success) {
+                // update pinia state
+                this.user = response.data.user;
+                this.token = response.data.token;
+                // store user details and jwt in local storage to keep user logged in between page refreshes
+                localStorage.setItem(`${app_name}_user`, JSON.stringify(this.user));
+                localStorage.setItem(`${app_name}_token`, this.token || '');
+                // redirect to previous url or default to home page
+                // router.push(this.returnUrl || '/dashboards/modern');
+                // router.push(this.returnUrl || '/');
+            } else {
+                // console.log('reponse: ', response);
+            }
 
-            // update pinia state
-            this.user = response.data.user;
-            this.token = response.data.token;
-            // store user details and jwt in local storage to keep user logged in between page refreshes
-            localStorage.setItem(`${app_name}_user`, JSON.stringify(this.user));
-            localStorage.setItem(`${app_name}_token`, this.token || '');
-            // redirect to previous url or default to home page
-            // router.push(this.returnUrl || '/dashboards/modern');
-            router.push(this.returnUrl || '/');
+            return { ...response.data };
         },
         async logout() {
             await axiosClient.post(`/logout`).then((res) => {

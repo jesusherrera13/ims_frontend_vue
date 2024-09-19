@@ -18,7 +18,11 @@ export const useUserStore = defineStore({
         is_loading: false,
         token: localStorage.getItem(`${app_name}_user`),
         returnUrl: null,
-        user_modulos: []
+        user_modulos: [],
+        alert: false,
+        message: '',
+        errors: [],
+        error: false
     }),
     getters: {
         getUsers(state) {
@@ -42,20 +46,20 @@ export const useUserStore = defineStore({
         async saveUser(params?: Object) {
             let url = `/register`;
             try {
-                const response = await axiosClient.post(url, params);
-                this.user = response.data.user;
-                this.token = response.data.token;
-                // store user details and jwt in local storage to keep user logged in between page refreshes
-                localStorage.setItem(`${app_name}_user`, JSON.stringify(this.user));
-                localStorage.setItem(`${app_name}_token`, this.token || '');
-                // redirect to previous url or default to home page
-                // router.push(this.returnUrl || '/dashboards/modern');
-            } catch (error) {
-                alert(error);
-                console.log(error);
+                const response: any = await axiosClient.post(url, params);
+
+                return { ...response.data, status: response.status };
+            } catch (error: any) {
+                console.log('error: ', error);
+                this.error = true;
+                // this.alert = true;
+                this.message = error.response.data.message || 'Error';
+                // console.log('xxx: ', error);
+                // this.errors = error.errors;
+                // console.log('errors: ', error);
             }
         },
-        async store() {
+        async store(payload: any) {
             this.is_loading = true;
             try {
                 const response = await axiosClient.post(`/user`, this.user);
@@ -79,10 +83,10 @@ export const useUserStore = defineStore({
                 this.is_loading = false;
             }
         },
-        async update() {
+        async update(payload: any) {
             this.is_loading = true;
             try {
-                const response = await axiosClient.put(`/user/${this.user.id}`, this.user);
+                const response = await axiosClient.put(`/user/${payload.id}`, payload);
                 this.user = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -105,6 +109,9 @@ export const useUserStore = defineStore({
             console.log(user_id);
             const response = await axiosClient.post(`/auth-user-modules`, { user_id: user_id });
             this.user_modulos = response.data.data;
+        },
+        async passwordReset(user_id: any) {
+            return await axiosClient.post(`/password-reset/${user_id}`);
         }
     }
 });
