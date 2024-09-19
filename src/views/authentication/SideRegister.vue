@@ -19,7 +19,7 @@ import RegisterForm from '@/components/auth/RegisterForm.vue';
             </v-col>
             <v-col cols="12" lg="5" xl="4" class="d-flex align-center justify-center bg-surface">
                 <div class="mt-xl-0 mt-5 mw-100">
-                    <h2 class="text-h3 mb-2">Bienvenido a KPIS</h2>
+                    <h2 class="text-h3 mb-2">Bienvenido a IMS</h2>
                     <!-- <div class="text-subtitle-1 mb-6">Your Admin Dashboard</div> -->
                     <RegisterForm />
                     <h6 class="text-h6 d-flex align-center mt-6 font-weight-medium">
