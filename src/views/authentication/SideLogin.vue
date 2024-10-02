@@ -23,7 +23,7 @@ import LoginForm from '@/components/auth/LoginForm.vue';
                     <!-- <div class="text-subtitle-1 mb-6">Your Admin Dashboard</div> -->
                     <LoginForm />
                     <h6 class="text-h6 d-flex align-center mt-6 font-weight-medium">
-                        ¿Eres nuevo en IMS?
+                        ¿Eres nuevo usuario?
                         <v-btn
                             class="pl-0 text-primary text-body-1 opacity-1 pl-2 font-weight-medium"
                             height="auto"

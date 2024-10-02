@@ -2,14 +2,17 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { Form } from 'vee-validate';
+import { router } from '@/router';
 
 /*Social icons*/
 import google from '@/assets/images/svgs/google-icon.svg';
 import facebook from '@/assets/images/svgs/facebook-icon.svg';
+import { tr } from 'date-fns/locale';
 
 const checkbox = ref(false);
 const valid = ref(false);
-const show1 = ref(false);
+const auth_error = ref(false);
+const message = ref('');
 const password = ref('admin123');
 const username = ref('master@gmail.com');
 const passwordRules = ref([
@@ -20,7 +23,17 @@ const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) 
 
 function validate(values: any, { setErrors }: any) {
     const authStore = useAuthStore();
-    return authStore.login(username.value, password.value).catch((error) => setErrors({ apiError: error }));
+    return authStore
+        .login(username.value, password.value)
+        .then((response) => {
+            if (response.success) {
+                router.push('/');
+            } else {
+                message.value = response.message;
+                auth_error.value = true;
+            }
+        })
+        .catch((error) => setErrors({ apiError: error }));
 }
 </script>
 
@@ -61,13 +74,13 @@ function validate(values: any, { setErrors }: any) {
             </v-checkbox>
             <div class="ml-sm-auto">
                 <RouterLink to="" class="text-primary text-decoration-none text-body-1 opacity-1 font-weight-medium"
-                    >Forgot Password ?</RouterLink
+                    >¿Olvidó su contraseña?</RouterLink
                 >
             </div>
         </div>
         <v-btn size="large" :loading="isSubmitting" color="primary" :disabled="valid" block type="submit" flat>Sign In</v-btn>
-        <div v-if="errors.apiError" class="mt-2">
-            <v-alert color="error">{{ errors.apiError }}</v-alert>
+        <div v-if="auth_error" class="mt-2">
+            <v-alert color="error">{{ message }}</v-alert>
         </div>
     </Form>
 </template>
