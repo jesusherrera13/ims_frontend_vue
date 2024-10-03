@@ -3,10 +3,12 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useUserStore } from '@/stores/apps/user/user';
 import { useModuloStore } from '@/stores/apps/sistema/modulo';
+import { useAccesoStore } from '@/stores/apps/acceso/acceso';
 
 const store = useUserStore();
 const authStore = useAuthStore();
 const storeModulo = useModuloStore();
+const accesoStore = useAccesoStore();
 
 onMounted(() => {
     storeModulo.fetchAccesoModulos();
@@ -41,7 +43,7 @@ function handleClick(e: any, row: any) {
         if (_chekbox.checked) user_modules.push(_chekbox.getAttribute('dbid'));
     }
 
-    storeModulo.storeUserModules(store.user.id, user_modules);
+    storeModulo.storeUserModules(accesoStore.user.id, user_modules);
 }
 
 watch([() => store.user.id], () => {
@@ -83,6 +85,7 @@ watch([() => storeModulo.access_user_modules], () => {
                             type="checkbox"
                             :class="`chk-access-modules ${item.clase} nivel-${item.nivel}`"
                             @click="handleClick($event, item)"
+                            :nombre="item.nombre"
                             :dbid="item.id"
                         />
                         <span :class="`module-span-${item.nivel}`">

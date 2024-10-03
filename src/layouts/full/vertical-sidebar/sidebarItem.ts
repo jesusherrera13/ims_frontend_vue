@@ -60,6 +60,11 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/departamentos'
     },
+    {
+        title: 'Medicamentos',
+        icon: BrandChromeIcon,
+        to: '/medicamentos'
+    },
     { header: 'Sistema' },
     {
         title: 'Usuarios',
