@@ -96,6 +96,11 @@ const MainRoutes = {
             path: '/medicamentos',
             component: () => import('@/views/apps/medicamentos/Medicamentos.vue')
         },
+        {
+            name: 'Metodo de pago',
+            path: '/metodoP',
+            component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
+        },
         // ADMINISTRACIÓN
         {
             name: 'Empleados',

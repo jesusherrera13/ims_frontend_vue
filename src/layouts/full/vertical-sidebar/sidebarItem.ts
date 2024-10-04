@@ -65,6 +65,11 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/medicamentos'
     },
+    {
+        title: 'Metodos de Pago',
+        icon: BrandChromeIcon,
+        to: '/metodoP'
+    },
     { header: 'Sistema' },
     {
         title: 'Usuarios',
