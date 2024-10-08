@@ -31,7 +31,7 @@ export const useCompaniaStore = defineStore({
         async fetchCompanias() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/compania`, { params: this.params });
+                const response = await axiosClient.get(`/empresas`, { params: this.params });
                 this.companias = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -85,6 +85,14 @@ export const useCompaniaStore = defineStore({
                 console.log(error);
                 this.is_loading = false;
             }
-        }
+        },
+        async fetchEmpresas (empresaId:any) {
+            try {
+            const response = await axiosClient.get(`/compania/${empresaId}`); 
+            this.companias = response.data; 
+            } catch (error) {
+            console.error('Error fetching empresas:', error);
+            }
+        },  
     }
 });

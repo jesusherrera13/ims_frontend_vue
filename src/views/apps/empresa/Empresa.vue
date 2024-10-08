@@ -3,6 +3,7 @@ import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UserEditableTable from '@/components/table/empresa/EmpresaEditableTable.vue';
+import EmpresaEditableTable from '@/components/table/empresa/EmpresaEditableTable.vue';
 // theme breadcrumb
 const page = ref({ title: 'Lista de Empleados' });
 
@@ -19,7 +20,7 @@ const breadcrumbs = ref([
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
     <v-card elevation="10">
         <v-card-text>
-            <UserEditableTable />
+            <EmpresaEditableTable />
         </v-card-text>
     </v-card>
 </template>
