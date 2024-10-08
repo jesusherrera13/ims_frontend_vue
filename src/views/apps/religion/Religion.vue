@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import EditableTable from '@/components/table/locaciones/EstadoEditableTable.vue'
+import EditableTable from '@/components/table/religiones/ReligionEditableTable.vue';
 // theme breadcrumb
-const page = ref({ title: 'Estados' });
+const page = ref({ title: 'Religiones' });
 
 const breadcrumbs = ref([
     {
-        text: '2 Nuevos Estados',
+        text: '2 Nuevas Religiones',
         disabled: true,
         href: '#'
     }

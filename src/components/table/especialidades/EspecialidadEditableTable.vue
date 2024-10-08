@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useCiudadStore } from '@/stores/apps/locaciones/ciudad';
-
-import { useMunicipioStore } from '@/stores/apps/locaciones/municipio';
+import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
+import { useAuthStore } from '@/stores/auth';
+import { useRolStore } from '@/stores/apps/rol';
+import { useRouter } from 'vue-router';
 
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
-const store = useCiudadStore();
-const MunicipioStore = useMunicipioStore();
+const store = useEspecialidadStore();
+const auth = useAuthStore();
+const rolStore = useRolStore();
+const router = useRouter();
 
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
@@ -15,33 +18,21 @@ const itemToDelete = ref(null);
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    store.fetchCiudades();
-    MunicipioStore.fetchMunicipios();
+    store.fetchEspecialidades();
 });
 
-const getCiudades: any = computed(() => {
-    return store.ciudades;
-});
-
-const getMunicipios: any = computed(() => {
-    return MunicipioStore.municipios.sort((a: any, b: any) => {
-        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
-        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
-
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-
-        // names must be equal
-        return 0;
-    });
+const getEspecialidades: any = computed(() => {
+    return store.especialidades;
+    /* return store.especialidades.filter((especialidad: any) => {
+        return (especialidad.id + ' ' + especialidad.nombre).toLowerCase().includes(search.value.toLowerCase());
+    }); */
 });
 
 const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
 const editedIndex = ref(-1);
-const items = ref(getCiudades);
-const municipios = ref(getMunicipios);
+const items = ref(getEspecialidades);
 
 interface Alert {
     show: boolean;
@@ -57,21 +48,14 @@ const alert = ref<Alert>({
 
 const editedItem = ref({
     id: '',
-    nombre: '',
-    municipio_id: null
+    nombre: ''
+
 });
 
 const defaultItem = ref({
     id: '',
-    nombre: '',
-    municipio_id: null
+    nombre: ''
 });
-
-const headers: any = ref([
-    { title: 'Ciudad', align: 'start', key: 'nombre' },
-    { title: 'Municipio', align: 'start', key: 'nombre_municipio' },
-    { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
-]);
 
 function showAlert(type: AlertType, message: string) {
     alert.value = {
@@ -84,8 +68,12 @@ function showAlert(type: AlertType, message: string) {
     }, 3000);
 }
 
+const headers: any = ref([
+    { title: 'Especialidad', align: 'start', key: 'nombre' },
+    { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
+]);
+
 function editItem(item: any) {
-    editedIndex.value = store.municipios.indexOf(item as (typeof store.municipios)[0])
     editedItem.value = Object.assign({}, item);
     dialog.value = true;
 }
@@ -97,18 +85,18 @@ function deleteItem(item: any) {
 
 async function confirmDelete() {
     try {
-        Object.assign(store.ciudad, itemToDelete.value);
+        Object.assign(store.especialidad, itemToDelete.value);
         const response = store.delete();
 
         response.then(() => {
-            store.fetchCiudades();
-            showAlert('success', 'Ciudad eliminada con éxito');
+            store.fetchEspecialidades();
+            showAlert('success', 'Especialidad eliminada con éxito');
         }).catch(error => {
-            showAlert('error', 'Error al eliminar la Ciudad');
+            showAlert('error', 'Error al eliminar la Especialidad');
         });
 
     } catch (error) {
-        showAlert('error', 'Error al eliminar la Ciudad');
+        showAlert('error', 'Error al eliminar la Especialidad');
     } finally {
         deleteDialog.value = false;
         itemToDelete.value = null;
@@ -116,30 +104,24 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.ciudad, editedItem.value);
+    Object.assign(store.especialidad, editedItem.value);
     let response;
-    if (store.ciudad.id) {
+    if (store.especialidad.id) {
         response = store.update();
-        showAlert('success', 'Ciudad actualizada con éxito');
+        showAlert('success', 'Especialidad actualizada con éxito');
     } else {
         response = store.store();
-        showAlert('success', 'Ciudad guardada con éxito');
+        showAlert('success', 'Especialidad guardada con éxito');
     }
 
     response.then(() => {
-        store.fetchCiudades();
+        store.fetchEspecialidades();
     }).catch(error => {
-        showAlert('error', 'Error al guardar la Ciudad');
+        showAlert('error', 'Error al guardar la Especialidad');
     });
 
     editedItem.value = Object.assign({}, defaultItem.value);
     close();
-}
-
-function openDialog() {
-    editedItem.value = { ...defaultItem.value };
-    editedIndex.value = -1;
-    dialog.value = true;
 }
 
 function close() {
@@ -151,12 +133,24 @@ function close() {
 }
 
 function refresh() {
-    store.fetchCiudades();
+    store.fetchEspecialidades();
+}
+
+/* function goTo(item: any) {
+    // console.log(item);
+    router.push(`/user/profile/${item.id}`);
+} */
+
+function openDialog() {
+    editedItem.value = { ...defaultItem.value };
+    editedIndex.value = -1;
+    dialog.value = true;
 }
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Nueva Ciudad' : 'Editar Ciudad';
+    return editedIndex.value === -1 ? 'Nueva Especialidad' : 'Editar Especialidad';
 });
+
 </script>
 
 <style>
@@ -175,7 +169,6 @@ const formTitle = computed(() => {
 </style>
 
 <template>
-
     <div class="alert-container">
         <v-alert v-if="alert.show" :type="alert.type" class="mb-4" prominent>
             <h5 class="text-h6 text-capitalize">{{ alert.type }}</h5>
@@ -187,7 +180,7 @@ const formTitle = computed(() => {
         <v-card>
             <v-card-title class="headline">Confirmar Eliminación</v-card-title>
             <v-card-text>
-                ¿Estás seguro de que deseas eliminar esta Ciudad?
+                ¿Estás seguro de que deseas eliminar esta especialidad?
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -209,7 +202,7 @@ const formTitle = computed(() => {
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="ml-auto">
-                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva ciudad
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva Especialidad
                     </v-btn>
                 </template>
                 <v-card>
@@ -221,23 +214,7 @@ const formTitle = computed(() => {
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-text-field 
-                                        variant="outlined" 
-                                        hide-details 
-                                        v-model="editedItem.nombre" 
-                                        label="Ciudad">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="12">
-                                    <v-autocomplete
-                                        variant="outlined"
-                                        hide-details
-                                        :items="municipios"
-                                        item-title="nombre"
-                                        item-value="id"
-                                        v-model="editedItem.municipio_id"
-                                        label="Municipio"
-                                    ></v-autocomplete>
+                                    <v-text-field variant="outlined" hide-details v-model="editedItem.nombre" label="Especialidad"></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-form>
@@ -246,7 +223,7 @@ const formTitle = computed(() => {
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.municipio_id == ''" variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
@@ -274,6 +251,9 @@ const formTitle = computed(() => {
                             <v-list-item value="editar" prepend-icon="mdi-square-edit-outline" @click="editItem(item)">
                                 <v-list-item-title>Editar</v-list-item-title>
                             </v-list-item>
+                            <!-- <v-list-item value="configurar" prepend-icon="mdi-cog" @click="goTo(item)">
+                                <v-list-item-title>Configurar</v-list-item-title>
+                            </v-list-item> -->
                             <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
                                 <v-list-item-title>Eliminar</v-list-item-title>
                             </v-list-item>

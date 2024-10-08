@@ -71,6 +71,7 @@ const MainRoutes = {
             path: '/empresa/profile/:id',
             component: () => import('@/views/apps/empresa-profile/Profile.vue')
         },
+        // LOCACIONES
         {
             name: 'Paises',
             path: '/paises',
@@ -101,6 +102,31 @@ const MainRoutes = {
             path: '/metodoP',
             component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
         },
+        // RELIGION
+        {
+            name: 'Religiones',
+            path: '/religiones',
+            component: () => import('@/views/apps/religion/Religion.vue')
+        },
+        // PACIENTES
+        {
+            name: 'Pacientes',
+            path: '/pacientes',
+            component: () => import('@/views/apps/paciente/Paciente.vue')
+        },
+        // ESPECIALIDAD
+        {
+            name: 'Especialidad',
+            path: '/especialidad',
+            component: () => import('@/views/apps/especialidad/Especialidad.vue')
+        },
+        // MÉDICOS
+        {
+            name: 'Medicos',
+            path: '/medicos',
+            component: () => import('@/views/apps/medico/Medico.vue')
+        },
+
         // ADMINISTRACIÓN
         {
             name: 'Empleados',
