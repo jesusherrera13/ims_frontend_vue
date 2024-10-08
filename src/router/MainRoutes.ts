@@ -27,6 +27,11 @@ const MainRoutes = {
             component: () => import('@/views/apps/accesos/Acceso.vue')
         },
         {
+            name: 'Perfiles',
+            path: '/perfiles',
+            component: () => import('@/views/apps/perfiles/Perfiles.vue')
+        },
+        {
             name: 'Usuario Perfil',
             path: '/user/profile/:id',
             component: () => import('@/views/apps/user-profile/Profile.vue')
@@ -87,6 +92,16 @@ const MainRoutes = {
             path: '/ciudades',
             component: () => import('@/views/apps/ciudad/Ciudad.vue')
         },
+        {
+            name: 'Medicamentos',
+            path: '/medicamentos',
+            component: () => import('@/views/apps/medicamentos/Medicamentos.vue')
+        },
+        {
+            name: 'Metodo de pago',
+            path: '/metodoP',
+            component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
+        },
         // RELIGION
         {
             name: 'Religiones',
@@ -111,7 +126,7 @@ const MainRoutes = {
             path: '/medicos',
             component: () => import('@/views/apps/medico/Medico.vue')
         },
-        
+
         // ADMINISTRACIÓN
         {
             name: 'Empleados',
