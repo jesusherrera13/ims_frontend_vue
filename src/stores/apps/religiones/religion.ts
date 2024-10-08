@@ -1,33 +1,32 @@
+// stores/apps/pais.ts
 import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 const app_name = `${import.meta.env.VITE_APP_NAME}`;
 
-export const useEstadoStore = defineStore({
-    id: 'Estado',
+export const useReligionStore = defineStore({
+    id: 'Religion',
     state: () => ({
-        estados: [],
-        estado: {
+        religiones: [],
+        religion: {
             id: '',
             nombre: '',
-            pais_id: ''
         },
-        paises: [],
         params: {},
         is_loading: false,
         token: localStorage.getItem(`${app_name}_user`),
         returnUrl: null
     }),
     getters: {
-        getUsers(state) {
-            return state.estados;
+        getReligiones(state) {
+            return state.religiones;
         }
     },
     actions: {
-        async fetchEstados() {
+        async fetchReligiones() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/estado`, { params: this.params });
-                this.estados = response.data;
+                const response = await axiosClient.get(`/religion`, { params: this.params });
+                this.religiones = response.data;
                 this.is_loading = false;
             } catch (error) {
                 alert(error);
@@ -35,23 +34,23 @@ export const useEstadoStore = defineStore({
             }
         },
 
-        async fetchEstadosPorPais(paisId:any) {
+        async fetchReligion(id: string) {
             try {
-                const response = await axiosClient.get(`/pais/${paisId}/estados`);
-                this.estados = response.data;
+                const response = await axiosClient.get(`/religion/${id}`);
+                this.religion = response.data;
             } catch (error) {
-                console.error('Error fetching estados:', error);
+                alert(error);
             }
         },
-
-        async saveEstado(params?: Object) {
-            let url = `/registrarEstado`;
+        
+        async saveReligion(params?: Object) {
+            let url = `/registrarReligion`;
             try {
                 const response = await axiosClient.post(url, params);
-                this.estado = response.data.estado;
+                this.religion = response.data.religion;
                 this.token = response.data.token;
                 // store user details and jwt in local storage to keep user logged in between page refreshes
-                localStorage.setItem(`${app_name}_user`, JSON.stringify(this.estado));
+                localStorage.setItem(`${app_name}_user`, JSON.stringify(this.religion));
                 localStorage.setItem(`${app_name}_token`, this.token || '');
                 // redirect to previous url or default to home page
                 // router.push(this.returnUrl || '/dashboards/modern');
@@ -63,8 +62,8 @@ export const useEstadoStore = defineStore({
         async store() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.post(`/estado`, this.estado);
-                this.estado = response.data;
+                const response = await axiosClient.post(`/religion`, this.religion);
+                this.religion = response.data;
                 this.is_loading = false;
             } catch (error) {
                 alert(error);
@@ -75,8 +74,8 @@ export const useEstadoStore = defineStore({
         async show() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/estado/${this.estado.id}`);
-                this.estado = response.data;
+                const response = await axiosClient.get(`/religion/${this.religion.id}`);
+                this.religion = response.data;
                 this.is_loading = false;
             } catch (error) {
                 alert(error);
@@ -87,8 +86,8 @@ export const useEstadoStore = defineStore({
         async update() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.put(`/estado/${this.estado.id}`, this.estado);
-                this.estado = response.data;
+                const response = await axiosClient.put(`/religion/${this.religion.id}`, this.religion);
+                this.religion = response.data;
                 this.is_loading = false;
             } catch (error) {
                 alert(error);
@@ -98,7 +97,7 @@ export const useEstadoStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/estado/${this.estado.id}`);
+                const response = await axiosClient.delete(`/religion/${this.religion.id}`);
                 this.is_loading = false;
             } catch (error) {
                 alert(error);

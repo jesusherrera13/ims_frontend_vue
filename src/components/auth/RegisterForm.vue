@@ -1,29 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { router } from '@/router';
 //import Logo from '@/layouts/full/logo/LogoDark.vue';
 /*Social icons*/
-import google from '@/assets/images/svgs/google-icon.svg';
-import facebook from '@/assets/images/svgs/facebook-icon.svg';
 import { useUserStore } from '@/stores/apps/user/user';
 const store = useUserStore();
 
-const password = ref('');
-const password_confirmation = ref('');
+const password = ref('123');
+const password_confirmation = ref('123');
 const checkbox = ref(false);
 const valid = ref(true);
 const show1 = ref(false);
-const rfc = ref('');
-const email = ref('');
+const auth_error = ref(false);
+const message = ref('');
+const name = ref('Jesús Herrera');
+const email = ref('jesusherrera13@gmail.com');
 const passwordRules = ref([
     (v: string) => !!v || 'Password is required',
     (v: string) => (v && v.length <= 10) || 'Password must be less than 10 characters'
 ]);
 const emailRules = ref([(v: string) => !!v || 'E-mail is required', (v: string) => /.+@.+\..+/.test(v) || 'E-mail must be valid']);
 const employee_id = ref('');
-const employeeIdRules = ref([(v: string) => !!v || 'El número de empleado es requiredo']);
+const nameRules = ref([(v: string) => !!v || 'El nombre es requerido']);
 
 const form = ref();
 const myButtonElement = ref<HTMLButtonElement | null>(null);
+
+const errors = computed(() => {
+    return store.errors;
+});
+
+/* const message = computed(() => {
+    return store.message;
+}); */
+
+/* const auth_error = computed(() => {
+    return store.error;
+}); */
+
+const dialog = ref(false);
+const dialog_register = ref(false);
 
 const submitForm = () => {
     if (myButtonElement.value) {
@@ -35,7 +51,7 @@ const submitForm = () => {
     }
 
     if (form.value.validate()) {
-        if (employee_id.value != '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) && rfc.value != '') {
+        if (password.value != '' && password_confirmation.value != '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
             // const formData = [
             //     'name'=> fname.value,
             //     'email': email.value,
@@ -44,14 +60,24 @@ const submitForm = () => {
 
             store
                 .saveUser({
-                    employee_id: employee_id.value,
                     email: email.value,
-                    rfc: rfc.value,
+                    name: name.value,
                     password: password.value,
                     password_confirmation: password_confirmation.value
                 })
                 .then((response) => {
+                    console.log(response);
+                    if (response.success || response.status == 201) {
+                        dialog_register.value = true;
+                        message.value = 'El usuario ha sido registrado. En espera de autorización del Administrador';
+                    } else {
+                        auth_error.value = true;
+                        message.value = response.message;
+                    }
                     const currentUrl = window.location.origin;
+                    // alert.value = store.alert;
+                    // dialog_register.value = store.alert;
+                    // console.log('errors: ', errors.value);
                     // window.location.href = currentUrl + '/usuarios';
                 })
                 .catch((error) => {
@@ -60,7 +86,7 @@ const submitForm = () => {
                         myButtonElement.value.addEventListener('click', submitForm);
                     }
 
-                    console.error('Error submitting form:', error.response.data);
+                    // console.error('Error submitting form:', error.response.data);
                     alert('There was an error submitting the form.');
                 });
         } else {
@@ -75,6 +101,13 @@ const submitForm = () => {
         }
         alert('Form is not valid');
     }
+};
+
+const hola = () => {
+    store.error = false;
+    store.alert = false;
+    store.message = '';
+    router.push('/auth/login');
 };
 </script>
 <template>
@@ -98,10 +131,8 @@ const submitForm = () => {
         </div>
     </div>
     <v-form ref="form" v-model="valid" lazy-validation action="/pages/boxedlogin" class="mt-5">
-        <v-label class="text-subtitle-1 font-weight-medium pb-2">Número de empleado</v-label>
-        <VTextField v-model="employee_id" :rules="employeeIdRules" required></VTextField>
-        <v-label class="text-subtitle-1 font-weight-medium pb-2">RFC</v-label>
-        <VTextField v-model="rfc" :rules="rfcRules" required></VTextField>
+        <v-label class="text-subtitle-1 font-weight-medium pb-2">Nombre</v-label>
+        <VTextField v-model="name" :rules="nameRules" required></VTextField>
         <v-label class="text-subtitle-1 font-weight-medium pb-2">Email</v-label>
         <VTextField v-model="email" :rules="emailRules" required></VTextField>
         <v-label class="text-subtitle-1 font-weight-medium pb-2">Password</v-label>
@@ -128,6 +159,17 @@ const submitForm = () => {
         <v-btn size="large" class="mt-2" color="primary" block submit flat @click="submitForm" ref="btn_registro" v-model="myButtonElement"
             >Registrar</v-btn
         >
+        <div v-if="auth_error" class="mt-2">
+            <v-alert color="error">{{ message }}</v-alert>
+        </div>
+
+        <v-dialog v-model="dialog_register" width="auto" persistent>
+            <v-card max-width="400" prepend-icon="mdi-alert-circle" :text="message" title="Usuario registrado">
+                <template v-slot:actions>
+                    <v-btn class="ms-auto" text="Iniciar sesión" @click="hola"></v-btn>
+                </template>
+            </v-card>
+        </v-dialog>
     </v-form>
 </template>
 

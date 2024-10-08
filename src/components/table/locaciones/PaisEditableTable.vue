@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { usePaisStore } from '@/stores/apps/pais';
+import { usePaisStore } from '@/stores/apps/locaciones/pais';
+import { useAuthStore } from '@/stores/auth';
+import { useRolStore } from '@/stores/apps/rol';
+import { useRouter } from 'vue-router';
+
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
 const store = usePaisStore();
-const itemsPerPage = ref(5);
-const page = ref(1);
+const auth = useAuthStore();
+const rolStore = useRolStore();
+const router = useRouter();
+
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
 
@@ -16,22 +22,17 @@ onMounted(async () => {
 });
 
 const getPaises: any = computed(() => {
-    return store.paises.filter((pais: any) => {
+    return store.paises;
+    /* return store.paises.filter((pais: any) => {
         return (pais.id + ' ' + pais.nombre).toLowerCase().includes(search.value.toLowerCase());
-    });
-});
-
-const paginatedList = computed(() => {
-    const start = (page.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return getPaises.value.slice(start, end);
+    }); */
 });
 
 const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
-const rolesbg = ref(['primary', 'secondary', 'error', 'success', 'warning']);
 const editedIndex = ref(-1);
+const items = ref(getPaises);
 
 interface Alert {
     show: boolean;
@@ -48,17 +49,18 @@ const alert = ref<Alert>({
 const editedItem = ref({
     id: '',
     nombre: '',
+    codigo_iso_alfa2: '',
+    codigo_iso_alfa3: '',
+    codigo_iso_numerico: '',
+
 });
 
 const defaultItem = ref({
     id: '',
     nombre: '',
-});
-
-watch(getPaises, (newList) => {
-    if ((page.value - 1) * itemsPerPage.value >= newList.length) {
-        page.value = 1;
-    }
+    codigo_iso_alfa2: '',
+    codigo_iso_alfa3: '',
+    codigo_iso_numerico: '',
 });
 
 function showAlert(type: AlertType, message: string) {
@@ -71,6 +73,14 @@ function showAlert(type: AlertType, message: string) {
         alert.value.show = false;
     }, 3000);
 }
+
+const headers: any = ref([
+    { title: 'País', align: 'start', key: 'nombre' },
+    { title: 'Código Iso Alfa 2', align: 'start', key: 'codigo_iso_alfa2' },
+    { title: 'Código Iso Alfa 3', align: 'start', key: 'codigo_iso_alfa3' },
+    { title: 'Código Iso Numérico', align: 'start', key: 'codigo_iso_numerico' },
+    { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
+]);
 
 function editItem(item: any) {
     editedItem.value = Object.assign({}, item);
@@ -131,6 +141,15 @@ function close() {
     }, 300);
 }
 
+function refresh() {
+    store.fetchPaises();
+}
+
+/* function goTo(item: any) {
+    // console.log(item);
+    router.push(`/user/profile/${item.id}`);
+} */
+
 function openDialog() {
     editedItem.value = { ...defaultItem.value };
     editedIndex.value = -1;
@@ -159,7 +178,6 @@ const formTitle = computed(() => {
 </style>
 
 <template>
-
     <div class="alert-container">
         <v-alert v-if="alert.show" :type="alert.type" class="mb-4" prominent>
             <h5 class="text-h6 text-capitalize">{{ alert.type }}</h5>
@@ -183,13 +201,17 @@ const formTitle = computed(() => {
 
     <v-row>
         <v-col cols="12" lg="4" md="6">
-            <v-text-field density="compact" v-model="search" label="Buscar Paises" hide-details variant="outlined"></v-text-field>
+            <v-text-field density="compact" v-model="search" label="Buscar" hide-details variant="outlined"></v-text-field>
         </v-col>
         <v-col cols="12" lg="8" md="6" class="text-right">
-            <v-dialog v-model="dialog" max-width="500">
+            <v-btn color="secondary" flat class="mr-1" @click="refresh">
+                <v-icon class="mr-2">mdi-refresh</v-icon>
+                Actualizar
+            </v-btn>
+            <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
-                    <v-btn color="primary" v-bind="props" flat class="ml-auto" @click="openDialog">
-                        <v-icon class="mr-2">mdi-plus-circle-outline</v-icon>Agregar Pais
+                    <v-btn color="primary" v-bind="props" flat class="ml-auto">
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo país
                     </v-btn>
                 </template>
                 <v-card>
@@ -200,29 +222,27 @@ const formTitle = computed(() => {
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-row>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        variant="outlined"
-                                        hide-details
-                                        v-model="editedItem.nombre"
-                                        label="Nombre"
-                                    ></v-text-field>
+                                <v-col cols="12">
+                                    <v-text-field variant="outlined" hide-details v-model="editedItem.nombre" label="País"></v-text-field>
                                 </v-col>
-
+                                <v-col cols="12">
+                                    <v-text-field variant="outlined" hide-details v-model="editedItem.codigo_iso_alfa2" label="Código Alfa 2"></v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field variant="outlined" hide-details v-model="editedItem.codigo_iso_alfa3" label="Código Alfa 3"></v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field variant="outlined" hide-details v-model="editedItem.codigo_iso_numerico" label="Código Numérico"></v-text-field>
+                                </v-col>
+                                
                             </v-row>
                         </v-form>
                     </v-card-text>
 
-                    
-
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn
-                            color="secondary"
-                            :disabled="editedItem.nombre == ''"
-                            variant="flat"
-                            @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.codigo_iso_alfa2 == '' || editedItem.codigo_iso_alfa3 == '' || editedItem.codigo_iso_numerico == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
@@ -230,60 +250,37 @@ const formTitle = computed(() => {
             </v-dialog>
         </v-col>
     </v-row>
+    <v-row>
+        <v-col>
+            <v-data-table
+                items-per-page="25"
+                :headers="headers"
+                :items="items"
+                :search="search"
+                class="border rounded-md"
+                density="compact"
+            >
+                <template v-slot:item.actions="{ item }">
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon="mdi-dots-vertical" v-bind="props" variant="plain"></v-btn>
+                        </template>
 
-    
-    
-    <v-table class="mt-5" :items-per-page="itemsPerPage" :page.sync="page">
-        <thead>
-            <tr>
-                <th class="text-subtitle-1 font-weight-semibold">Id</th>
-                <th class="text-subtitle-1 font-weight-semibold">Nombre</th>
-                <th class="text-subtitle-1 font-weight-semibold">Fecha de creacion</th>
-                <th class="text-subtitle-1 font-weight-semibold">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            
-
-            <tr v-for="item in paginatedList" :key="item.id">
-                <td class="text-subtitle-1">{{ item.id }}</td>
-                <td>
-                    <div class=" py-4">
-                        <div>
-                            <v-img :src="item.avatar" width="45px" class="rounded-circle img-fluid"></v-img>
-                        </div>
-
-                        <div class="ml-5">
-                            <h4 class="text-h6">{{ item.nombre }}</h4>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-subtitle-1">{{ item.created_at }}</td>
-                <td>
-                    <div class="d-flex align-center">
-                        <v-tooltip text="Editar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="editItem(item)" v-bind="props"
-                                    ><PencilIcon stroke-width="1.5" size="20" class="text-primary"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                        <v-tooltip text="Eliminar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="deleteItem(item)" v-bind="props"
-                                    ><TrashIcon stroke-width="1.5" size="20" class="text-error"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-        <template v-slot:bottom>
-            <div class="justify-end">
-                <v-pagination v-model="page" :length="Math.ceil(getPaises.length / itemsPerPage)" style="justify-content: end!important;" />
-            </div>
-        </template>
-    </v-table>
+                        <v-list density="compact" nav>
+                            <v-list-item value="editar" prepend-icon="mdi-square-edit-outline" @click="editItem(item)">
+                                <v-list-item-title>Editar</v-list-item-title>
+                            </v-list-item>
+                            <!-- <v-list-item value="configurar" prepend-icon="mdi-cog" @click="goTo(item)">
+                                <v-list-item-title>Configurar</v-list-item-title>
+                            </v-list-item> -->
+                            <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
+                                <v-list-item-title>Eliminar</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </template>
+            </v-data-table>
+        </v-col>
+    </v-row>
     <v-overlay v-model="store.is_loading"></v-overlay>
 </template>

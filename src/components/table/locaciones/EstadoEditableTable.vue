@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useEstadoStore } from '@/stores/apps/estado';
+import { useEstadoStore } from '@/stores/apps/locaciones/estado';
+
+import { usePaisStore } from '@/stores/apps/locaciones/pais';
+
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
 const store = useEstadoStore();
-const itemsPerPage = ref(5);
-const page = ref(1);
+const PaisStore = usePaisStore();
+
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
 
@@ -13,25 +16,33 @@ type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
     store.fetchEstados();
+    PaisStore.fetchPaises();
 });
 
 const getEstados: any = computed(() => {
-    return store.estados.filter((estado: any) => {
-        return (estado.id + ' ' + estado.nombre).toLowerCase().includes(search.value.toLowerCase());
+    return store.estados;
+});
+
+const getPaises: any = computed(() => {
+    return PaisStore.paises.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
     });
 });
 
-const paginatedList = computed(() => {
-    const start = (page.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return getEstados.value.slice(start, end);
-});
 
 const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
-const rolesbg = ref(['primary', 'secondary', 'error', 'success', 'warning']);
 const editedIndex = ref(-1);
+const items = ref(getEstados);
+const paises = ref(getPaises);
 
 interface Alert {
     show: boolean;
@@ -48,20 +59,26 @@ const alert = ref<Alert>({
 const editedItem = ref({
     id: '',
     nombre: '',
-    pais_id: ''
+    codigo: '',
+    abreviacion: '',
+    pais_id: null
 });
 
 const defaultItem = ref({
     id: '',
     nombre: '',
-    pais_id: ''
+    codigo: '',
+    abreviacion: '',
+    pais_id: null
 });
 
-watch(getEstados, (newList) => {
-    if ((page.value - 1) * itemsPerPage.value >= newList.length) {
-        page.value = 1;
-    }
-});
+const headers: any = ref([
+    { title: 'Estado', align: 'start', key: 'nombre' },
+    { title: 'País', align: 'start', key: 'nombre_pais' },
+    { title: 'Código', align: 'start', key: 'codigo' },
+    { title: 'Abreviación', align: 'start', key: 'abreviacion' },
+    { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
+]);
 
 function showAlert(type: AlertType, message: string) {
     alert.value = {
@@ -139,6 +156,10 @@ function close() {
     }, 300);
 }
 
+function refresh() {
+    store.fetchEstados();
+}
+
 const formTitle = computed(() => {
     return editedIndex.value === -1 ? 'Nuevo Estado' : 'Editar Estado';
 });
@@ -184,13 +205,17 @@ const formTitle = computed(() => {
 
     <v-row>
         <v-col cols="12" lg="4" md="6">
-            <v-text-field density="compact" v-model="search" label="Buscar Estados" hide-details variant="outlined"></v-text-field>
+            <v-text-field density="compact" v-model="search" label="Buscar" hide-details variant="outlined"></v-text-field>
         </v-col>
         <v-col cols="12" lg="8" md="6" class="text-right">
-            <v-dialog v-model="dialog" max-width="500">
+            <v-btn color="secondary" flat class="mr-1" @click="refresh">
+                <v-icon class="mr-2">mdi-refresh</v-icon>
+                Actualizar
+            </v-btn>
+            <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
-                    <v-btn color="primary" v-bind="props" flat class="ml-auto" @click="openDialog">
-                        <v-icon class="mr-2">mdi-plus-circle-outline</v-icon>Agregar Estado
+                    <v-btn color="primary" v-bind="props" flat class="ml-auto">
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo estado
                     </v-btn>
                 </template>
                 <v-card>
@@ -201,21 +226,40 @@ const formTitle = computed(() => {
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-row>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        variant="outlined"
-                                        hide-details
-                                        v-model="editedItem.nombre"
-                                        label="Nombre"
-                                    ></v-text-field>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.nombre" 
+                                        label="Estado">
+                                    </v-text-field>
                                 </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.codigo" 
+                                        label="Código">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.abreviacion" 
+                                        label="Abreviación">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="12">
+                                    <v-autocomplete
                                         variant="outlined"
                                         hide-details
+                                        :items="paises"
+                                        item-title="nombre"
+                                        item-value="id"
                                         v-model="editedItem.pais_id"
-                                        label="Id Pais"
-                                    ></v-text-field>
+                                        label="Pais"
+                                    ></v-autocomplete>
                                 </v-col>
                             </v-row>
                         </v-form>
@@ -224,11 +268,7 @@ const formTitle = computed(() => {
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn
-                            color="secondary"
-                            :disabled="editedItem.nombre == '' || editedItem.pais_id == ''"
-                            variant="flat"
-                            @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.pais_id == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
@@ -236,57 +276,34 @@ const formTitle = computed(() => {
             </v-dialog>
         </v-col>
     </v-row>
-    <v-table class="mt-5" :items-per-page="itemsPerPage" :page.sync="page">
-        <thead>
-            <tr>
-                <th class="text-subtitle-1 font-weight-semibold">Id</th>
-                <th class="text-subtitle-1 font-weight-semibold">Nombre</th>
-                <th class="text-subtitle-1 font-weight-semibold">Id Pais</th>
-                <th class="text-subtitle-1 font-weight-semibold">Fecha de creacion</th>
-                <th class="text-subtitle-1 font-weight-semibold">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in paginatedList" :key="item.id">
-                <td class="text-subtitle-1">{{ item.id }}</td>
-                <td>
-                    <div class=" py-4">
-                        <div>
-                            <v-img :src="item.avatar" width="45px" class="rounded-circle img-fluid"></v-img>
-                        </div>
+    <v-row>
+        <v-col>
+            <v-data-table
+                items-per-page="25"
+                :headers="headers"
+                :items="items"
+                :search="search"
+                class="border rounded-md"
+                density="compact"
+            >
+                <template v-slot:item.actions="{ item }">
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon="mdi-dots-vertical" v-bind="props" variant="plain"></v-btn>
+                        </template>
 
-                        <div class="ml-5">
-                            <h4 class="text-h6">{{ item.nombre }}</h4>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-subtitle-1">{{ item.pais_id }}</td>
-                <td class="text-subtitle-1">{{ item.created_at }}</td>
-                <td>
-                    <div class="d-flex align-center">
-                        <v-tooltip text="Editar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="editItem(item)" v-bind="props"
-                                    ><PencilIcon stroke-width="1.5" size="20" class="text-primary"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                        <v-tooltip text="Eliminar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="deleteItem(item)" v-bind="props"
-                                    ><TrashIcon stroke-width="1.5" size="20" class="text-error"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-        <template v-slot:bottom>
-            <div class="justify-end">
-                <v-pagination v-model="page" :length="Math.ceil(getEstados.length / itemsPerPage)" style="justify-content: end!important;" />
-            </div>
-        </template>
-    </v-table>
+                        <v-list density="compact" nav>
+                            <v-list-item value="editar" prepend-icon="mdi-square-edit-outline" @click="editItem(item)">
+                                <v-list-item-title>Editar</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
+                                <v-list-item-title>Eliminar</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </template>
+            </v-data-table>
+        </v-col>
+    </v-row>
     <v-overlay v-model="store.is_loading"></v-overlay>
 </template>
