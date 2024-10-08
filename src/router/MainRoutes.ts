@@ -91,6 +91,16 @@ const MainRoutes = {
             path: '/ciudades',
             component: () => import('@/views/apps/ciudad/Ciudad.vue')
         },
+        {
+            name: 'Medicamentos',
+            path: '/medicamentos',
+            component: () => import('@/views/apps/medicamentos/Medicamentos.vue')
+        },
+        {
+            name: 'Metodo de pago',
+            path: '/metodoP',
+            component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
+        },
         // ADMINISTRACIÓN
         {
             name: 'Empleados',
