@@ -98,8 +98,8 @@ const MainRoutes = {
             component: () => import('@/views/apps/medicamentos/Medicamentos.vue')
         },
         {
-            name: 'Metodo de pago',
-            path: '/metodoP',
+            name: 'Método de pago',
+            path: '/metodo-de-pago',
             component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
         },
         // RELIGION
