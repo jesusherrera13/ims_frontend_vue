@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useMunicipioStore } from '@/stores/apps/locaciones/municipio';
+import { useMedicoStore } from '@/stores/apps/medicos/medico';
 
+import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 import { useEstadoStore } from '@/stores/apps/locaciones/estado';
+import { useCiudadStore } from '@/stores/apps/locaciones/ciudad';
 
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
-const store = useMunicipioStore();
+const store = useMedicoStore();
+const EspecialidadStore = useEspecialidadStore();
 const EstadoStore = useEstadoStore();
+const CiudadStore = useCiudadStore();
 
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
@@ -15,16 +19,45 @@ const itemToDelete = ref(null);
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    store.fetchMunicipios();
+    store.fetchMedicos();
+    EspecialidadStore.fetchEspecialidades();
     EstadoStore.fetchEstados();
+    CiudadStore.fetchCiudades();
 });
 
-const getMunicipios: any = computed(() => {
-    return store.municipios;
+const getMedicos: any = computed(() => {
+    return store.medicos;
 });
+
+const getEspecialidades: any = computed(() => {
+    return EspecialidadStore.especialidades.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
+    });
+});
+
 
 const getEstados: any = computed(() => {
     return EstadoStore.estados.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
+    });
+});
+
+const getCiudades: any = computed(() => {
+    return CiudadStore.ciudades.sort((a: any, b: any) => {
         const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
         const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
 
@@ -40,8 +73,10 @@ const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
 const editedIndex = ref(-1);
-const items = ref(getMunicipios);
+const items = ref(getMedicos);
+const especialidades = ref(getEspecialidades);
 const estados = ref(getEstados);
+const ciudades = ref(getCiudades);
 
 interface Alert {
     show: boolean;
@@ -55,24 +90,41 @@ const alert = ref<Alert>({
     message: ''
 });
 
+
 const editedItem = ref({
     id: '',
     nombre: '',
-    codigo: '',
-    estado_id: null
+    rfc: '',
+    direccion: '',
+    cp: '',
+    ciudad_id: null,
+    estado_id: null,
+    genero: '',
+    especialidad_id: null
 });
 
 const defaultItem = ref({
     id: '',
     nombre: '',
-    codigo: '',
-    estado_id: null
+    rfc: '',
+    direccion: '',
+    cp: '',
+    ciudad_id: null,
+    estado_id: null,
+    genero: '',
+    especialidad_id: null
 });
 
 const headers: any = ref([
-    { title: 'Municipio', align: 'start', key: 'nombre' },
-    { title: 'Código', align: 'start', key: 'codigo' },
+    { title: 'Nombre', align: 'start', key: 'nombre' },
+    { title: 'Rfc', align: 'start', key: 'rfc' },
+    { title: 'Direccion', align: 'start', key: 'direccion' },
+    { title: 'CP', align: 'start', key: 'cp' },
+    { title: 'Ciudad', align: 'start', key: 'nombre_ciudad' },
     { title: 'Estado', align: 'start', key: 'nombre_estado' },
+    { title: 'Genero', align: 'start', key: 'genero' },
+    { title: 'ID Esp', align: 'start', key: 'nombre_especialidad' },
+    //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
 ]);
 
@@ -87,10 +139,24 @@ function showAlert(type: AlertType, message: string) {
     }, 3000);
 }
 
-function editItem(item: any) {
-    editedItem.value = Object.assign({}, item);
-    dialog.value = true;
+async function editItem(item:any) {
+  // Verifica si las ciudades ya están cargadas en el store
+  if (!CiudadStore.ciudades.length) {
+    await CiudadStore.fetchCiudades();  // Asegúrate de que se llame al método del store
+  }
+
+  // Asignar los valores del ítem editado a `editedItem`
+  editedItem.value = {
+    ...item,
+    ciudad_id: item.ciudad_id ?? null,
+    estado_id: item.estado_id ?? null,
+    especialidad_id: item.especialidad_id ?? null,
+  };
+
+  // Abrir el diálogo de edición
+  dialog.value = true;
 }
+
 
 function deleteItem(item: any) {
     itemToDelete.value = item;
@@ -99,18 +165,18 @@ function deleteItem(item: any) {
 
 async function confirmDelete() {
     try {
-        Object.assign(store.municipio, itemToDelete.value);
+        Object.assign(store.medico, itemToDelete.value);
         const response = store.delete();
 
         response.then(() => {
-            store.fetchMunicipios();
-            showAlert('success', 'Municipio eliminado con éxito');
+            store.fetchMedicos();
+            showAlert('success', 'Médico eliminado con éxito');
         }).catch(error => {
-            showAlert('error', 'Error al eliminar el Municipio');
+            showAlert('error', 'Error al eliminar el Médico');
         });
 
     } catch (error) {
-        showAlert('error', 'Error al eliminar el Municipio');
+        showAlert('error', 'Error al eliminar el Médico');
     } finally {
         deleteDialog.value = false;
         itemToDelete.value = null;
@@ -118,20 +184,20 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.municipio, editedItem.value);
+    Object.assign(store.medico, editedItem.value);
     let response;
-    if (store.municipio.id) {
+    if (store.medico.id) {
         response = store.update();
-        showAlert('success', 'Municipio actualizado con éxito');
+        showAlert('success', 'Médico actualizado con éxito');
     } else {
         response = store.store();
-        showAlert('success', 'Municipio guardado con éxito');
+        showAlert('success', 'Médico guardado con éxito');
     }
 
     response.then(() => {
-        store.fetchMunicipios();
+        store.fetchMedicos();
     }).catch(error => {
-        showAlert('error', 'Error al guardar el Municipio');
+        showAlert('error', 'Error al guardar el Médico');
     });
 
     editedItem.value = Object.assign({}, defaultItem.value);
@@ -153,12 +219,11 @@ function close() {
 }
 
 function refresh() {
-    store.fetchMunicipios();
+    store.fetchMedicos();
 }
 
-
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Nuevo Municipio' : 'Editar Municipio';
+    return editedIndex.value === -1 ? 'Nuevo Médico' : 'Editar Médico';
 });
 </script>
 
@@ -190,7 +255,7 @@ const formTitle = computed(() => {
         <v-card>
             <v-card-title class="headline">Confirmar Eliminación</v-card-title>
             <v-card-text>
-                ¿Estás seguro de que deseas eliminar este Municipio?
+                ¿Estás seguro de que deseas eliminar este Médico?
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -212,7 +277,7 @@ const formTitle = computed(() => {
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="ml-auto">
-                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo municipio
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo medico
                     </v-btn>
                 </template>
                 <v-card>
@@ -228,18 +293,35 @@ const formTitle = computed(() => {
                                         variant="outlined" 
                                         hide-details 
                                         v-model="editedItem.nombre" 
-                                        label="Municipio">
+                                        label="Nombre">
                                     </v-text-field>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-text-field 
                                         variant="outlined" 
                                         hide-details 
-                                        v-model="editedItem.codigo" 
-                                        label="Código">
+                                        v-model="editedItem.rfc" 
+                                        label="Rfc">
                                     </v-text-field>
                                 </v-col>
-                                <v-col cols="12" sm="12">
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.direccion" 
+                                        label="Dirección">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.cp" 
+                                        label="Cp">
+                                    </v-text-field>
+                                </v-col>
+                                
+                                <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined"
                                         hide-details
@@ -250,6 +332,41 @@ const formTitle = computed(() => {
                                         label="Estado"
                                     ></v-autocomplete>
                                 </v-col>
+
+                                <v-col cols="12">
+                                    <v-autocomplete
+                                        variant="outlined"
+                                        hide-details
+                                        :items="ciudades"
+                                        item-title="nombre"
+                                        item-value="id"
+                                        v-model="editedItem.ciudad_id"
+                                        label="Ciudad"
+                                    ></v-autocomplete>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-select
+                                        variant="outlined"
+                                        hide-details
+                                        v-model="editedItem.genero"
+                                        :items="['masculino', 'femenino', 'otro']"
+                                        label="Género"
+                                    ></v-select>
+                                </v-col>
+
+                                <v-col cols="12">
+                                    <v-autocomplete
+                                        variant="outlined"
+                                        hide-details
+                                        :items="especialidades"
+                                        item-title="nombre"
+                                        item-value="id"
+                                        v-model="editedItem.especialidad_id"
+                                        label="Especialidad"
+                                    ></v-autocomplete>
+                                </v-col>
+                                
+                              
                             </v-row>
                         </v-form>
                     </v-card-text>
@@ -257,7 +374,7 @@ const formTitle = computed(() => {
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.estado_id == ''" variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.rfc == '' || editedItem.direccion == '' || editedItem.cp == '' || editedItem.ciudad_id == '' || editedItem.estado_id == '' || editedItem.genero == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>

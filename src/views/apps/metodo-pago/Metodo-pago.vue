@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import EditableTable from '@/components/table/locaciones/EstadoEditableTable.vue'
+import MetodosPEditableTable from '@/components/table/sistema/MetodosPEditableTable.vue';
 // theme breadcrumb
-const page = ref({ title: 'Estados' });
+const page = ref({ title: 'Lista de metodos de pago' });
 
 const breadcrumbs = ref([
     {
-        text: '2 Nuevos Estados',
+        text: 'Metodos de pago disponibles',
         disabled: true,
         href: '#'
     }
@@ -19,7 +19,7 @@ const breadcrumbs = ref([
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
     <v-card elevation="10">
         <v-card-text>
-            <EditableTable />
+            <MetodosPEditableTable />
         </v-card-text>
     </v-card>
 </template>

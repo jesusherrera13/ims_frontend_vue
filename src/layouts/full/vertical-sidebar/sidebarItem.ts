@@ -60,6 +60,16 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/departamentos'
     },
+    {
+        title: 'Medicamentos',
+        icon: BrandChromeIcon,
+        to: '/medicamentos'
+    },
+    {
+        title: 'Metodos de Pago',
+        icon: BrandChromeIcon,
+        to: '/metodoP'
+    },
     { header: 'Sistema' },
     {
         title: 'Usuarios',
@@ -133,6 +143,26 @@ const sidebarItem: menu[] = [
                 to: '/ciudades'
             }
         ]
+    },
+    {
+        title: 'Religiónes',
+        icon: CircleIcon,
+        to: '/religiones'
+    },
+    {
+        title: 'Pacientes',
+        icon: CircleIcon,
+        to: '/pacientes'
+    },
+    {
+        title: 'Especialidades',
+        icon: CircleIcon,
+        to: '/especialidades'
+    },
+    {
+        title: 'Médicos',
+        icon: CircleIcon,
+        to: '/medicos'
     },
     {
         title: 'Menu Level',
