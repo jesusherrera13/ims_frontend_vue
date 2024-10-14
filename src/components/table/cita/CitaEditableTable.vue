@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
-
+import {useCitaStore } from '@/stores/apps/cita/cita'
 import { useReligionStore } from '@/stores/apps/religiones/religion';
+import { useMedicoStore } from '@/stores/apps/medicos/medico';
+import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
+
 
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
-const store = usePacienteStore();
+const store = useCitaStore();
 const ReligionStore = useReligionStore();
+const PacienteStore = usePacienteStore();
+const MedicoStore = useMedicoStore();
+const EspecialidadStore = useEspecialidadStore();
 
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
@@ -15,16 +21,47 @@ const itemToDelete = ref(null);
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    store.fetchPacientes();
-    ReligionStore.fetchReligiones();
+    store.fetchCitas();
+    PacienteStore.fetchPacientes();
+    MedicoStore.fetchMedicos();
+    EspecialidadStore.fetchEspecialidades();
+
+
+    //ReligionStore.fetchReligiones();
 });
 
-const getPacientes: any = computed(() => {
-    return store.pacientes;
+const getCitas: any = computed(() => {
+    return store.citas;
 });
 
-const getReligiones: any = computed(() => {
-    return ReligionStore.religiones.sort((a: any, b: any) => {
+const Especialidad: any = computed(() => {
+    return EspecialidadStore.especialidades.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
+    });
+}); 
+
+const Paciente: any = computed(() => {
+    return PacienteStore.pacientes.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
+    });
+});
+
+const Medicos: any = computed(() => {
+    return MedicoStore.medicos.sort((a: any, b: any) => {
         const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
         const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
 
@@ -40,8 +77,13 @@ const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
 const editedIndex = ref(-1);
-const items = ref(getPacientes);
-const religiones = ref(getReligiones);
+const items = ref(getCitas);
+/* const religiones = ref(getReligiones); */
+const pacientes =ref(Paciente)
+const medico = ref(MedicoStore)
+const especialidades = ref(Especialidad)
+const medicos = ref(Medicos)
+
 
 interface Alert {
     show: boolean;
@@ -58,33 +100,29 @@ const alert = ref<Alert>({
 
 const editedItem = ref({
     id: '',
-    nombre: '',
-    apellido1: '',
-    apellido2: '',
-    religion_id: null,
-    f_nacimiento: '',
-    domicilio: '',
-    foto_perfil: ''
+    especialidad_id: '',
+    patient_id: '',
+    doctor_id: '',
+    date: '',
+    hour: '',
 });
 
 const defaultItem = ref({
     id: '',
-    nombre: '',
-    apellido1: '',
-    apellido2: '',
-    religion_id: null,
-    f_nacimiento: '',
-    domicilio: '',
-    foto_perfil: ''
+    especialidad_id: '',
+    patient_id: '',
+    doctor_id: '',
+    date: '',
+    hour: '',
 });
 
 const headers: any = ref([
-    { title: 'Nombre', align: 'start', key: 'nombre' },
-    { title: 'Ape Pat', align: 'start', key: 'apellido1' },
-    { title: 'Ape Mat', align: 'start', key: 'apellido2' },
-    { title: 'Religión', align: 'start', key: 'nombre_religion' },
-    { title: 'Fecha de Nacimiento', align: 'start', key: 'f_nacimiento' },
-    { title: 'Domicilio', align: 'start', key: 'domicilio' },
+    { title: 'Especialidad', align: 'start', key: 'especialidad_id' },
+    { title: 'Nombre Paciente', align: 'start', key: 'patient_id' },
+    { title: 'Doctor Asignado', align: 'start', key: 'doctor_id' },
+    { title: 'Fecha', align: 'start', key: 'date' },
+    { title: 'Hora', align: 'start', key: 'hour' },
+
     //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
 ]);
@@ -101,7 +139,7 @@ function showAlert(type: AlertType, message: string) {
 }
 
 function editItem(item: any) {
-    editedIndex.value = store.religiones.indexOf(item as (typeof store.religiones)[0])
+    editedIndex.value = store.citas.indexOf(item as (typeof store.citas)[0])
     editedItem.value = Object.assign({}, item);
     dialog.value = true;
 }
@@ -113,18 +151,18 @@ function deleteItem(item: any) {
 
 async function confirmDelete() {
     try {
-        Object.assign(store.paciente, itemToDelete.value);
+        Object.assign(store.cita, itemToDelete.value);
         const response = store.delete();
 
         response.then(() => {
-            store.fetchPacientes();
-            showAlert('success', 'Paciente eliminado con éxito');
+            store.fetchCitas();
+            showAlert('success', 'Cita eliminada con éxito');
         }).catch(error => {
-            showAlert('error', 'Error al eliminar el Paciente');
+            showAlert('error', 'Error al eliminar la cita');
         });
 
     } catch (error) {
-        showAlert('error', 'Error al eliminar el Paciente');
+        showAlert('error', 'Error al eliminar la cita');
     } finally {
         deleteDialog.value = false;
         itemToDelete.value = null;
@@ -132,20 +170,20 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.paciente, editedItem.value);
+    Object.assign(store.cita, editedItem.value);
     let response;
-    if (store.paciente.id) {
+    if (store.cita.id) {
         response = store.update();
-        showAlert('success', 'Paciente actualizado con éxito');
+        showAlert('success', 'Cita actualizada con éxito');
     } else {
         response = store.store();
-        showAlert('success', 'Paciente guardado con éxito');
+        showAlert('success', 'Cita guardada con éxito');
     }
 
     response.then(() => {
-        store.fetchPacientes();
+        store.fetchCitas();
     }).catch(error => {
-        showAlert('error', 'Error al guardar el Paciente');
+        showAlert('error', 'Error al guardar la cita');
     });
 
     editedItem.value = Object.assign({}, defaultItem.value);
@@ -167,12 +205,20 @@ function close() {
 }
 
 function refresh() {
-    store.fetchPacientes();
+    store.fetchCitas();
 }
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Nuevo Paciente' : 'Editar Paciente';
+    return editedIndex.value === -1 ? 'Nueva Cita' : 'Editar Cita';
 });
+
+
+function onEspecialidadChange(newEspecialidad:any) {
+  if(newEspecialidad){
+    EspecialidadStore.fetchEspecialidad(newEspecialidad);
+  }
+}
+
 </script>
 
 <style>
@@ -203,7 +249,7 @@ const formTitle = computed(() => {
         <v-card>
             <v-card-title class="headline">Confirmar Eliminación</v-card-title>
             <v-card-text>
-                ¿Estás seguro de que deseas eliminar este Paciente?
+                ¿Estás seguro de que deseas eliminar esta cita?
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -225,7 +271,7 @@ const formTitle = computed(() => {
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="ml-auto">
-                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo paciente
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva Cita
                     </v-btn>
                 </template>
                 <v-card>
@@ -237,68 +283,70 @@ const formTitle = computed(() => {
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-text-field 
+                                    <v-autocomplete
                                         variant="outlined" 
+                                       :items="especialidades"
+                                       item-title="nombre"
+                                       item-value="id"
                                         hide-details 
-                                        v-model="editedItem.nombre" 
-                                        label="Paciente">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-text-field 
-                                        variant="outlined" 
-                                        hide-details 
-                                        v-model="editedItem.apellido1" 
-                                        label="Apellido">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-text-field 
-                                        variant="outlined" 
-                                        hide-details 
-                                        v-model="editedItem.apellido2" 
-                                        label="Apellido2">
-                                    </v-text-field>
+                                        v-model="editedItem.especialidad_id" 
+                                        label="Especialidad"
+                                        @update:modelValue="onEspecialidadChange" 
+                                        >
+                                        
+                                    </v-autocomplete>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-autocomplete
-                                        variant="outlined"
-                                        hide-details
-                                        :items="religiones"
-                                        item-title="nombre"
-                                        item-value="id"
-                                        v-model="editedItem.religion_id"
-                                        label="Religión"
-                                    ></v-autocomplete>
+                                        variant="outlined" 
+                                       :items="pacientes"
+                                       item-title="nombre"
+                                       item-value="id"
+                                        hide-details 
+                                        v-model="editedItem.patient_id" 
+                                        label="Paciente">
+                                    </v-autocomplete>
                                 </v-col>
+                              
                                 <v-col cols="12">
+                                    <v-autocomplete
+                                        variant="outlined" 
+                                        :medico="medico"
+                                        hide-details 
+                                        v-model="editedItem.doctor_id" 
+                                        label="Doctor que se le asignara la consulta">
+                                    </v-autocomplete>
+                                </v-col>
+                                <v-col cols="6">
                                     <v-text-field
                                         type="date"
                                         variant="outlined"
                                         hide-details
-                                        v-model="editedItem.f_nacimiento"
-                                        label="Fecha de Nacimiento"
+                                        v-model="editedItem.date"
+                                        label="Fecha de la Cita"
                                     ></v-text-field>
                                 </v-col>
-
-                                <v-col cols="12">
-                                    <v-text-field 
-                                        variant="outlined" 
-                                        hide-details 
-                                        v-model="editedItem.domicilio" 
-                                        label="Domicilio">
-                                    </v-text-field>
+                                <v-col cols="6">
+                                    <v-text-field
+                                        type="time"
+                                        variant="outlined"
+                                        hide-details
+                                        v-model="editedItem.hour"
+                                        label="Hora de la Cita"
+                                    ></v-text-field>
                                 </v-col>
-                                
-                            
+                    
+                    
                             </v-row>
                         </v-form>
                     </v-card-text>
 
                     <v-card-actions class="pa-4">
+                        <v-btn color="primary" @click="close">Registrar Nuevo Paciente</v-btn>
                         <v-spacer></v-spacer>
+                       
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.apellido1 == '' || editedItem.apellido2 == '' || editedItem.religion_id == '' || editedItem.f_nacimiento == '' || editedItem.domicilio == ''" variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.patient_id == '' || editedItem.doctor_id == '' || editedItem.date == '' || editedItem.hour" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
