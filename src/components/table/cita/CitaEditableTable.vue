@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch,reactive } from 'vue';
 import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
 import {useCitaStore } from '@/stores/apps/cita/cita'
 //import { useReligionStore } from '@/stores/apps/religiones/religion';
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
+import { formatearFecha,formatearHoraMinutos } from '@/helpers/helpers';
+
 
 
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
@@ -73,6 +75,8 @@ const Medicos: any = computed(() => {
     });
 });
 
+
+
 const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
@@ -98,8 +102,8 @@ const alert = ref<Alert>({
 });
 
 
-const editedItem = ref({
-    id: '',
+const editedItem = reactive({
+    id: null,
     especialidad_id: '',
     patient_id: '',
     medico_id: '',
@@ -107,8 +111,8 @@ const editedItem = ref({
     hour: '',
 });
 
-const defaultItem = ref({
-    id: '',
+const defaultItem = reactive({
+    id: null,
     especialidad_id: '',
     patient_id: '',
     medico_id: '',
@@ -116,12 +120,12 @@ const defaultItem = ref({
     hour: '',
 });
 
-const headers: any = ref([
+const headers: any = reactive([
     { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
     { title: 'Nombre Paciente', align: 'start', key: 'patient_name' },
     { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
-    { title: 'Fecha', align: 'start', key: 'date' },
-    { title: 'Hora', align: 'start', key: 'hour' },
+    { title: 'Fecha', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
+    { title: 'Hora', align: 'start', key: 'hour', value: (item: any) => formatearHoraMinutos(item.hour) },
 
     //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
@@ -140,7 +144,7 @@ function showAlert(type: AlertType, message: string) {
 
 function editItem(item: any) {
     editedIndex.value = store.citas.indexOf(item as (typeof store.citas)[0])
-    editedItem.value = Object.assign({}, item);
+    Object.assign(editedItem, item);
     dialog.value = true;
 }
 
@@ -170,7 +174,7 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.cita, editedItem.value);
+    Object.assign(store.cita, editedItem);
     let response;
     if (store.cita.id) {
         response = store.update();
@@ -186,12 +190,12 @@ function save() {
         showAlert('error', 'Error al guardar la cita');
     });
 
-    editedItem.value = Object.assign({}, defaultItem.value);
+    Object.assign(editedItem, defaultItem);
     close();
 }
 
 function openDialog() {
-    editedItem.value = { ...defaultItem.value };
+    Object.assign(editedItem, defaultItem);
     editedIndex.value = -1;
     dialog.value = true;
 }
@@ -199,7 +203,7 @@ function openDialog() {
 function close() {
     dialog.value = false;
     setTimeout(() => {
-        editedItem.value = { ...defaultItem.value };
+        Object.assign(editedItem, defaultItem);
         editedIndex.value = -1;
     }, 300);
 }
@@ -213,7 +217,8 @@ const formTitle = computed(() => {
 });
 
 
-
+//prueba de la funcion
+console.log(formatearFecha('2023-10-01'));
 
 </script>
 
