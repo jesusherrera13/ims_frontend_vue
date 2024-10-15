@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
 import {useCitaStore } from '@/stores/apps/cita/cita'
-import { useReligionStore } from '@/stores/apps/religiones/religion';
+//import { useReligionStore } from '@/stores/apps/religiones/religion';
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 
@@ -10,7 +10,7 @@ import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad'
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
 const store = useCitaStore();
-const ReligionStore = useReligionStore();
+//const ReligionStore = useReligionStore();
 const PacienteStore = usePacienteStore();
 const MedicoStore = useMedicoStore();
 const EspecialidadStore = useEspecialidadStore();
@@ -102,7 +102,7 @@ const editedItem = ref({
     id: '',
     especialidad_id: '',
     patient_id: '',
-    doctor_id: '',
+    medico_id: '',
     date: '',
     hour: '',
 });
@@ -111,15 +111,15 @@ const defaultItem = ref({
     id: '',
     especialidad_id: '',
     patient_id: '',
-    doctor_id: '',
+    medico_id: '',
     date: '',
     hour: '',
 });
 
 const headers: any = ref([
-    { title: 'Especialidad', align: 'start', key: 'especialidad_id' },
-    { title: 'Nombre Paciente', align: 'start', key: 'patient_id' },
-    { title: 'Doctor Asignado', align: 'start', key: 'doctor_id' },
+    { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
+    { title: 'Nombre Paciente', align: 'start', key: 'patient_name' },
+    { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
     { title: 'Fecha', align: 'start', key: 'date' },
     { title: 'Hora', align: 'start', key: 'hour' },
 
@@ -213,11 +213,7 @@ const formTitle = computed(() => {
 });
 
 
-function onEspecialidadChange(newEspecialidad:any) {
-  if(newEspecialidad){
-    EspecialidadStore.fetchEspecialidad(newEspecialidad);
-  }
-}
+
 
 </script>
 
@@ -291,7 +287,6 @@ function onEspecialidadChange(newEspecialidad:any) {
                                         hide-details 
                                         v-model="editedItem.especialidad_id" 
                                         label="Especialidad"
-                                        @update:modelValue="onEspecialidadChange" 
                                         >
                                         
                                     </v-autocomplete>
@@ -311,9 +306,11 @@ function onEspecialidadChange(newEspecialidad:any) {
                                 <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined" 
-                                        :medico="medico"
+                                        :items="medicos"
+                                        item-title="nombre"
+                                        item-value="id"
                                         hide-details 
-                                        v-model="editedItem.doctor_id" 
+                                        v-model="editedItem.medico_id" 
                                         label="Doctor que se le asignara la consulta">
                                     </v-autocomplete>
                                 </v-col>
@@ -346,7 +343,7 @@ function onEspecialidadChange(newEspecialidad:any) {
                         <v-spacer></v-spacer>
                        
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.patient_id == '' || editedItem.doctor_id == '' || editedItem.date == '' || editedItem.hour" variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.patient_id == '' || editedItem.medico_id == '' " variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>

@@ -3,16 +3,16 @@ import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 
 export const useCitaStore = defineStore({
-    id: 'Cita',
+    id: 'Appointments',
     state: () => ({
         citas: [],
         cita: {
             id: '',
             especialidad_id: '',
-            paciente_id: '',
-            doctor_id: '',
-            fecha: '',
-            hora: '',
+            patient_id: '',
+            medico_id: '',
+            date: '',
+            hour: '',
         },
         pacientes: [],
         especialidades: [],
@@ -116,7 +116,7 @@ export const useCitaStore = defineStore({
                 alert('Error fetching religiones: ' + error);
             }
         }, 
-        async fetchMedicosPorEspecialidad(medicoId:any) {
+    /*     async fetchMedicosPorEspecialidad(medicoId:any) {
             try {
             const response = await axiosClient.get(`/medico/${medicoId}/especialidad`); 
             this.medicos = response.data; 
@@ -124,6 +124,6 @@ export const useCitaStore = defineStore({
             console.error('Error fetching medicos:', error);
             
             }
-        },
+        }, */
     }
 });
