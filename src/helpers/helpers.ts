@@ -1,5 +1,6 @@
-export const  formatearFecha = (fecha: string): string => {
+export const formatearFecha = (fecha: string): string => {
     const fechaNueva = new Date(fecha);
+    fechaNueva.setDate(fechaNueva.getDate() + 1); // Ajusta la fecha sumando un día
     const opciones: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'long',
@@ -20,17 +21,14 @@ export const  formatearFecha = (fecha: string): string => {
     return fechaNueva.toLocaleTimeString('es-ES', opciones);
 };
  */
-import { parse, format } from 'date-fns';
-import { es } from 'date-fns/locale';
-
 export const formatearHoraMinutos = (fecha: string): string => {
-    // Intentamos parsear la fecha según el formato esperado
-    const fechaNueva = parse(fecha, 'yyyy-MM-dd HH:mm:ss', new Date());
-    
+    const fechaNueva = new Date(fecha.replace(/-/g, '/')); // Reemplaza guiones por barras
     if (isNaN(fechaNueva.getTime())) {
-        return 'Fecha no válida';
+        return 'Hora no válida';
     }
-
-    // Formateamos la hora y los minutos
-    return format(fechaNueva, 'HH:mm', { locale: es });
+    const opciones: Intl.DateTimeFormatOptions = {
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return fechaNueva.toLocaleTimeString('es-ES', opciones);
 };

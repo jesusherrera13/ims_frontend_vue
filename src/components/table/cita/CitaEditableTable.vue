@@ -24,7 +24,7 @@ type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
     store.fetchCitas();
-    PacienteStore.fetchPacientes();
+    store.fetchPaciente();
     MedicoStore.fetchMedicos();
     EspecialidadStore.fetchEspecialidades();
 
@@ -50,9 +50,10 @@ const Especialidad: any = computed(() => {
 }); 
 
 const Paciente: any = computed(() => {
-    return PacienteStore.pacientes.sort((a: any, b: any) => {
-        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
-        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+    return store.pacientes.sort((a: any, b: any) => {
+        const nameA = `${a.nombre} ${a.apellido1}`.toUpperCase(); // ignore upper and lowercase
+        const nameB = `${b.nombre} ${b.apellido1}`.toUpperCase();
+         // ignore upper and lowercase
 
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
@@ -122,7 +123,7 @@ const defaultItem = reactive({
 
 const headers: any = reactive([
     { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
-    { title: 'Nombre Paciente', align: 'start', key: 'patient_name' },
+    { title: 'Nombre Paciente', align: 'start', key: 'patient_name', value: (item: any) => `${item.patient_name} ${item.patient_lastname}` },
     { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
     { title: 'Fecha', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
     { title: 'Hora', align: 'start', key: 'hour', value: (item: any) => formatearHoraMinutos(item.hour) },

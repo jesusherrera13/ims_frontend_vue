@@ -106,8 +106,8 @@ export const useCitaStore = defineStore({
                 let newPaciente: any = paciente.map((data: any) => ({
                     ...data,
                     id: data.id,
-                    title: `${data.nombre}`,
-                    nombre: data.nombre                    
+                    title: `${data.nombre} ${data.apellido1}`,
+                    nombre: data.nombre.concat(' ').concat(data.apellido1)                
                 }));
                 this.pacientes = newPaciente; // Corregir la asignación
                 console.log('Fetched paciente:', this.pacientes);
