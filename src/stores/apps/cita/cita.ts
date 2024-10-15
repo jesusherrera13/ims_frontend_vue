@@ -116,14 +116,14 @@ export const useCitaStore = defineStore({
                 alert('Error fetching religiones: ' + error);
             }
         }, 
-    /*     async fetchMedicosPorEspecialidad(medicoId:any) {
+         async fetchMedicosPorEspecialidad(medicoId:any) {
             try {
-            const response = await axiosClient.get(`/medico/${medicoId}/especialidad`); 
+            const response = await axiosClient.get(`/cita/${medicoId}/especialidad`); 
             this.medicos = response.data; 
             } catch (error) {
             console.error('Error fetching medicos:', error);
             
             }
-        }, */
+        }, 
     }
 });
