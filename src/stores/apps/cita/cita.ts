@@ -112,8 +112,8 @@ export const useCitaStore = defineStore({
                 this.pacientes = newPaciente; // Corregir la asignación
                 console.log('Fetched paciente:', this.pacientes);
             } catch (error) {
-                console.error('Error fetching religiones:', error);
-                alert('Error fetching religiones: ' + error);
+                console.error('Error fetching pacientes:', error);
+                alert('Error fetching pacientes: ' + error);
             }
         }, 
          async fetchMedicosPorEspecialidad(medicoId:any) {
