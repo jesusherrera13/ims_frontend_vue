@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch,reactive } from 'vue';
+import { ref, computed, onMounted, watch, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
 import {useCitaStore } from '@/stores/apps/cita/cita'
 //import { useReligionStore } from '@/stores/apps/religiones/religion';
@@ -19,6 +20,7 @@ const EspecialidadStore = useEspecialidadStore();
 
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
+const cambiarRuta = ref(false);
 
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
@@ -85,7 +87,6 @@ const editedIndex = ref(-1);
 const items = ref(getCitas);
 /* const religiones = ref(getReligiones); */
 const pacientes =ref(Paciente)
-const medico = ref(MedicoStore)
 const especialidades = ref(Especialidad)
 const medicos = ref(Medicos)
 
@@ -188,18 +189,18 @@ function save() {
     response.then(() => {
         store.fetchCitas();
     }).catch(error => {
-        showAlert('error', 'Error al guardar la cita');
+        showAlert(error, 'Error al guardar la cita');
     });
 
     Object.assign(editedItem, defaultItem);
     close();
 }
 
-function openDialog() {
+/* function openDialog() {
     Object.assign(editedItem, defaultItem);
     editedIndex.value = -1;
     dialog.value = true;
-}
+} */
 
 function close() {
     dialog.value = false;
@@ -220,6 +221,29 @@ const formTitle = computed(() => {
 
 //prueba de la funcion
 console.log(formatearFecha('2023-10-01'));
+
+const router = useRouter();
+
+const nuevoPaciente = () => {
+    router.push('/pacientes');
+}
+
+
+const generateHalfHourIntervals = () => {
+      const intervals = [];
+      for (let hour = 0; hour < 24; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          const formattedHour = hour.toString().padStart(2, '0');
+          const formattedMinute = minute.toString().padStart(2, '0');
+          intervals.push(`${formattedHour}:${formattedMinute}`);
+        }
+      }
+      return intervals;
+    };
+
+    // Lista de horas en intervalos de media hora
+    const hours = ref(generateHalfHourIntervals());
+
 
 </script>
 
@@ -257,6 +281,20 @@ console.log(formatearFecha('2023-10-01'));
                 <v-spacer></v-spacer>
                 <v-btn color="error" variant="text" @click="deleteDialog = false">Cancelar</v-btn>
                 <v-btn color="success" variant="text" @click="confirmDelete">Confirmar</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="cambiarRuta" persistent max-width="500">
+        <v-card>
+            <v-card-title class="headline">¿Estas seguro de salir?</v-card-title>
+            <v-card-text>
+                Si sales de esta pagina perderas los datos que no hayas guardado
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" variant="text" @click="cambiarRuta = false">Cancelar</v-btn>
+                <v-btn color="success" variant="text" @click="nuevoPaciente">Confirmar</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -330,13 +368,13 @@ console.log(formatearFecha('2023-10-01'));
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-text-field
-                                        type="time"
+                                    <v-select
+                                        :items="hours"
                                         variant="outlined"
                                         hide-details
                                         v-model="editedItem.hour"
                                         label="Hora de la Cita"
-                                    ></v-text-field>
+                                    ></v-select>
                                 </v-col>
                     
                     
@@ -345,7 +383,7 @@ console.log(formatearFecha('2023-10-01'));
                     </v-card-text>
 
                     <v-card-actions class="pa-4">
-                        <v-btn color="primary" @click="close">Registrar Nuevo Paciente</v-btn>
+                        <v-btn color="primary" @click="cambiarRuta = true">Registrar Nuevo Paciente</v-btn>
                         <v-spacer></v-spacer>
                        
                         <v-btn color="error" @click="close">Cancelar</v-btn>
