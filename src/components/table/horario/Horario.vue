@@ -7,7 +7,7 @@ import {useCitaStore } from '@/stores/apps/cita/cita'
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 import { formatearFecha,formatearHoraMinutos } from '@/helpers/helpers';
-import ModalTiempo from './ModalTiempo.vue';
+import ModalTiempo from '@/components/table/cita/ModalTiempo.vue';
 
 import { PencilIcon, TrashIcon ,TimelineEventIcon } from 'vue-tabler-icons';
 
