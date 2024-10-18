@@ -171,6 +171,11 @@ const sidebarItem: menu[] = [
         to: '/cita'
     },
     {
+        title: 'Horarios',
+        icon: BrandChromeIcon,
+        to: '/horarios'
+    },
+    {
         title: 'Menu Level',
         icon: MenuIcon,
         to: '#',

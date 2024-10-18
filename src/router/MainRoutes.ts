@@ -132,6 +132,11 @@ const MainRoutes = {
             path: '/cita',
             component: () => import('@/views/apps/cita/Cita.vue')
         },
+        {
+            name: 'horario',
+            path: '/horarios',
+            component: () => import('@/views/apps/horario/Horario.vue') // Corregir la ruta
+        },
 
         // ADMINISTRACIÓN
         {
