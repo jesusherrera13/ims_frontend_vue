@@ -165,6 +165,11 @@ const sidebarItem: menu[] = [
         to: '/medicos'
     },
     {
+        title: 'Recetas',
+        icon: CircleIcon,
+        to: '/recetas'
+    },
+    {
         title: 'Menu Level',
         icon: MenuIcon,
         to: '#',
