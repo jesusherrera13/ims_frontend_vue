@@ -10,6 +10,8 @@ export const useCitaStore = defineStore({
             id: '',
             start_time: '',
             end_time: '',
+            medico_id: '',
+            especialidad_id: '',
         },
         especialidades: [],
         medicos: [],
@@ -18,10 +20,12 @@ export const useCitaStore = defineStore({
     }),
     getters: {},
     actions: {
-        async fetchCitas() {
+        async fetchHorario(Medico:any, Especialidad:any) {  
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/horario`, { params: this.params });
+                const response = await axiosClient.get(`/horario/${Medico.id}/especialidades/${Especialidad.id}/horarios`, {
+                    params: this.params
+                });
                 this.horarios = response.data;
                 this.is_loading = false;
             } catch (error) {
@@ -41,7 +45,7 @@ export const useCitaStore = defineStore({
         },
 
         // store sirve para guardar un nuevo registro
-        async store() {
+        async store(Medico:any, Especialidad:any) {
             this.is_loading = true;
             try {
                 const response = await axiosClient.post(`/horario`, this.horario);
@@ -70,7 +74,7 @@ export const useCitaStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/cita/${this.horario.id}`);
+                const response = await axiosClient.delete(`/horario/${this.horario.id}`);
                 this.is_loading = false;
             } catch (error) {
                 alert(error);
