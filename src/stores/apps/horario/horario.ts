@@ -43,7 +43,7 @@ export const useCitaStore = defineStore({
         },
  */
         // store sirve para guardar un nuevo registro
-        async store() {
+        async store(Medico:any, Especialidad:any) {
             this.is_loading = true;
             try {
                 const response = await axiosClient.post(`/horario`, this.horario);
@@ -71,7 +71,8 @@ export const useCitaStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/cita/${this.horario.id}`);
+                const response = await axiosClient.delete(`/horario/${this.horario.id}`);
+                this.is_loading = false;
             } catch (error) {
                 alert(error);
                 console.log(error);
