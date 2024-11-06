@@ -7,7 +7,7 @@ import {useCitaStore } from '@/stores/apps/cita/cita'
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 import { formatearFecha,formatearHoraMinutos } from '@/helpers/helpers';
-import ModalTiempo from '@/components/table/cita/ModalTiempo.vue';
+
 
 import { PencilIcon, TrashIcon ,TimelineEventIcon } from 'vue-tabler-icons';
 
@@ -117,28 +117,28 @@ const alert = ref<Alert>({
 
 const editedItem = reactive({
     id: null,
-    especialidad_id: '',
-    patient_id: '',
     medico_id: '',
-    date: '',
-    hour: '',
+    especialidad_id: '',
+    start_time: '',
+    end_time: '',
+
 });
 
 const defaultItem = reactive({
-    id: null,
-    especialidad_id: '',
-    patient_id: '',
+   id: null,
     medico_id: '',
-    date: '',
-    hour: '',
+    especialidad_id: '',
+    start_time: '',
+    end_time: '',
+
 });
 
 const headers: any = reactive([
     { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
-    { title: 'Nombre Paciente', align: 'start', key: 'patient_name', value: (item: any) => `${item.patient_name} ${item.patient_lastname}` },
-    { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
-    { title: 'Fecha', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
-    { title: 'Hora', align: 'start', key: 'hour', value: (item: any) => formatearHoraMinutos(item.hour) },
+    { title: 'Doctor Asignado', align: 'start', key: 'medico_name',value: (item: any) => `${item.patient_name} ${item.patient_lastname}` },
+    { title: 'Fecha de entrada', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
+    { title: 'Fecha de salida', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
+    { title: 'intervalo', align: 'start', key: 'hour', value: (item: any) => formatearHoraMinutos(item.hour) },
 
     //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
@@ -364,31 +364,35 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                        item-title="nombre"
                                        item-value="id"
                                         hide-details 
-                                        v-model="editedItem.patient_id" 
+                                        v-model="editedItem.medico_id" 
                                         label="Paciente">
                                     </v-autocomplete>
                                 </v-col>
-                              
-                                <v-col cols="12">
+                          
+                                <v-col cols="6">
                                     <v-autocomplete
                                         variant="outlined" 
+                                        type="time"
                                         :items="medicos"
                                         item-title="nombre"
                                         item-value="id"
                                         hide-details 
-                                        v-model="editedItem.medico_id" 
-                                        label="Doctor que se le asignara la consulta">
+                                        v-model="editedItem.start_time" 
+                                        label="Hora de entrada">
                                     </v-autocomplete>
+                                    
                                 </v-col>
+                                   
                                 <v-col cols="6">
                                     <v-text-field
-                                        type="date"
+                                        type="time"
                                         variant="outlined"
                                         hide-details
-                                        v-model="editedItem.date"
-                                        label="Fecha de la Cita"
+                                        v-model="editedItem.end_time"
+                                        label="Hora de Salida"
                                     ></v-text-field>
                                 </v-col>
+                                 <!-- 
                                 <v-col cols="6">
                                     <v-select
                                         :items="timeIntervals"
@@ -397,7 +401,7 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                         v-model="editedItem.hour"
                                         label="Hora de la Cita"
                                     ></v-select>
-                                </v-col>
+                                </v-col> -->
                     
                     
                             </v-row>
@@ -405,11 +409,11 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                     </v-card-text>
 
                     <v-card-actions class="pa-4">
-                        <v-btn v-if="editedItem.patient_id === ''" color="primary" @click="cambiarRuta = true">Registrar Nuevo Paciente</v-btn>
+                        <v-btn v-if="editedItem.especialidad_id === ''" color="primary" @click="cambiarRuta = true">Registrar Nuevo Paciente</v-btn>
                         <v-spacer></v-spacer>
                        
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.patient_id == '' || editedItem.medico_id == '' " variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.especialidad_id == '' || editedItem.medico_id == '' " variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>

@@ -3,11 +3,13 @@ import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 
 export const useCitaStore = defineStore({
-    id: 'Horarios',
+    id: 'Horarios', 
     state: () => ({
         horarios: [],
         horario: {
             id: '',
+            medico_id: '',
+            especialidad_id: '',
             start_time: '',
             end_time: '',
         },
@@ -18,19 +20,19 @@ export const useCitaStore = defineStore({
     }),
     getters: {},
     actions: {
-        async fetchCitas() {
+        async fetcHorario(Medico:any, Especialidad:any) {
             this.is_loading = true;
             try {
-                const response = await axiosClient.get(`/horario`, { params: this.params });
+                const response = await axiosClient.get(`/horario/${Medico.id}/especialidades/${Especialidad.id}/horarios`, { params: this.params });
                 this.horarios = response.data;
-                this.is_loading = false;
             } catch (error) {
                 alert(error);
+            } finally {
                 this.is_loading = false;
             }
         },
 
-        async fetchMedicoEspecialistaPorHorario(Medico:any, Horario:any, Especialidad:any) {
+   /*      async fetchMedicoEspecialistaPorHorario(Medico:any, Horario:any, Especialidad:any) {
             try {
                 const response = await axiosClient.get(`/cita/${Medico}/${Horario}/${Especialidad}`);
                 this.horarios = response.data;
@@ -39,17 +41,17 @@ export const useCitaStore = defineStore({
                 alert('Error fetching horarios: ' + error);
             }
         },
-
+ */
         // store sirve para guardar un nuevo registro
         async store() {
             this.is_loading = true;
             try {
                 const response = await axiosClient.post(`/horario`, this.horario);
                 this.horario = response.data;
-                this.is_loading = false;
             } catch (error) {
                 alert(error);
                 console.log(error);
+            } finally {
                 this.is_loading = false;
             }
         },
@@ -60,7 +62,6 @@ export const useCitaStore = defineStore({
             try {
                 const response = await axiosClient.put(`/horario/${this.horario.id}`, this.horario);
                 this.horario = response.data;
-                this.is_loading = false;
             } catch (error) {
                 alert(error);
                 console.log(error);
@@ -71,14 +72,14 @@ export const useCitaStore = defineStore({
             this.is_loading = true;
             try {
                 const response = await axiosClient.delete(`/cita/${this.horario.id}`);
-                this.is_loading = false;
             } catch (error) {
                 alert(error);
                 console.log(error);
+            } finally {
                 this.is_loading = false;
             }
         },
-        async fetchEspecialidad() {
+  /*       async fetchEspecialidad() {
             try {
                 const response = await axiosClient.get('/especialidad');
                 let especialidad: any = response.data;
@@ -94,7 +95,7 @@ export const useCitaStore = defineStore({
                 console.error('Error fetching religiones:', error);
                 alert('Error fetching religiones: ' + error);
             }
-        }, 
+        },  */
     /*     async fetchPaciente() {
             try {
                 const response = await axiosClient.get('/paciente');
