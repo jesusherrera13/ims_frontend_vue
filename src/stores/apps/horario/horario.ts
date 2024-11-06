@@ -20,7 +20,7 @@ export const useCitaStore = defineStore({
     }),
     getters: {},
     actions: {
-        async fetcHorario(Medico:any, Especialidad:any) {
+        async fetcHorarioDoctorPorEpecialida(Medico:any, Especialidad:any) {
             this.is_loading = true;
             try {
                 const response = await axiosClient.get(`/horario/${Medico.id}/especialidades/${Especialidad.id}/horarios`, { params: this.params });
@@ -43,13 +43,13 @@ export const useCitaStore = defineStore({
         },
  */
         // store sirve para guardar un nuevo registro
-        async store(Medico:any, Especialidad:any) {
+        async store(Medico: any, Especialidad: any) {
             this.is_loading = true;
             try {
-                const response = await axiosClient.post(`/horario`, this.horario);
+                const response = await axiosClient.post(`/horario/${Medico.id}/especialidades/${Especialidad.id}/horarios`, this.horario);
                 this.horario = response.data;
-            } catch (error) {
-                alert(error);
+            } catch (error: any) {
+                alert(error.message || error);
                 console.log(error);
             } finally {
                 this.is_loading = false;
@@ -62,8 +62,8 @@ export const useCitaStore = defineStore({
             try {
                 const response = await axiosClient.put(`/horario/${this.horario.id}`, this.horario);
                 this.horario = response.data;
-            } catch (error) {
-                alert(error);
+            } catch (error:any) {
+                alert(error.message || error);
                 console.log(error);
             }
         },
@@ -73,8 +73,8 @@ export const useCitaStore = defineStore({
             try {
                 const response = await axiosClient.delete(`/horario/${this.horario.id}`);
                 this.is_loading = false;
-            } catch (error) {
-                alert(error);
+            } catch (error:any) {
+                alert(error || error.message);
                 console.log(error);
             } finally {
                 this.is_loading = false;
@@ -114,6 +114,7 @@ export const useCitaStore = defineStore({
                 alert('Error fetching pacientes: ' + error);
             }
         },  */
+        /*
          async fetchMedicosPorEspecialidad(medicoId:any) {
             try {
             const response = await axiosClient.get(`/cita/${medicoId}/especialidad`); 
@@ -123,5 +124,6 @@ export const useCitaStore = defineStore({
             
             }
         }, 
+        */
     }
 });
