@@ -440,6 +440,9 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                             <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
                                 <v-list-item-title>Eliminar</v-list-item-title>
                             </v-list-item>
+                               <v-list-item value="intervalo" prepend-icon="mdi-time" @click="deleteItem(item)">
+                                <v-list-item-title>Editar intervalo de tiempo</v-list-item-title>
+                            </v-list-item>
                         </v-list>
                     </v-menu>
                 </template>
