@@ -13,7 +13,7 @@ export const useHorarioStore = defineStore({
             medico_id: '',
             especialidad_id: '',
             intervalo: 30,
-            active: true,
+            vacaciones: false,
         },
         especialidades: [],
         medicos: [],

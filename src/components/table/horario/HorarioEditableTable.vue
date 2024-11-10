@@ -36,7 +36,7 @@ const getHorarios: any = computed(() => {
 
 // Propiedad computada para los intervalos de tiempo
 const timeIntervals = computed(() => {
-    return generateTimeIntervals(editedItem.start_time,editedItem.end_time, editedItem.intervalo);
+    return generateTimeIntervals(startTime.value,endTime.value, intervalo.value);
 });
 
 
@@ -95,8 +95,9 @@ const medicos = ref(Medicos)
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
 const cambiarRuta = ref(false);
-/* const startTime = ref('08:00');
-const endTime = ref('20:00'); */
+const startTime = ref('08:00');
+const endTime = ref('20:00'); 
+const intervalo = ref(30);
 const intervalMinutes = ref(30);
 const intervalOptions = [30,45,60,90,120];
 
@@ -122,6 +123,8 @@ const editedItem = reactive({
     start_time: '',
     end_time: '',
     intervalo: Number(intervalMinutes.value),
+    vacaciones: false,
+
 });
 
 const defaultItem = reactive({
@@ -131,6 +134,7 @@ const defaultItem = reactive({
     start_time: '',
     end_time: '',
     intervalo: Number(intervalMinutes.value),
+    vacaciones: false,
 });
 
 const headers: any = reactive([
@@ -380,35 +384,39 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-text-field
-                                        type="time"
+                                    <v-autocomplete
                                         :items="timeIntervals"
                                         variant="outlined"
                                         hide-details
                                         v-model="editedItem.start_time"
                                         label="Hora que empieza el turno"
-                                    ></v-text-field>
+                                    ></v-autocomplete>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-text-field
-                                        type="time"
+                                    <v-autocomplete
                                         :items="timeIntervals"
                                         variant="outlined"
                                         hide-details
                                         v-model="editedItem.end_time"
                                         label="Hora que termina el turno"
-                                    ></v-text-field>
+                                    ></v-autocomplete>
                                 </v-col>
                                 
                                     <v-col cols="6">
-                                    <v-select
-                                        type="number"
+                                    <v-autocomplete
                                         variant="outlined"
                                         hide-details
                                         :items="intervalOptions"
                                         v-model="editedItem.intervalo"
                                         label="Intervalo de tiempo('minutos')"
-                                    ></v-select>
+                                    ></v-autocomplete>
+                                </v-col>
+
+                                <v-col cols="12">
+                                    <v-checkbox
+                                        v-model="editedItem.vacaciones"
+                                        label="¿Está de vacaciones?"
+                                    ></v-checkbox>
                                 </v-col>
                     
                             </v-row>
