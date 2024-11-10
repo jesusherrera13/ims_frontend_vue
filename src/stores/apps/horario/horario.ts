@@ -10,6 +10,10 @@ export const useHorarioStore = defineStore({
             id: '',
             start_time: '',
             end_time: '',
+            medico_id: '',
+            especialidad_id: '',
+            intervalo: 30,
+            active: true,
         },
         especialidades: [],
         medicos: [],
@@ -70,7 +74,7 @@ export const useHorarioStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/cita/${this.horario.id}`);
+                const response = await axiosClient.delete(`/horario/${this.horario.id}`);
                 this.is_loading = false;
             } catch (error) {
                 alert(error);

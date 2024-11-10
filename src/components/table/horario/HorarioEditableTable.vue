@@ -36,7 +36,7 @@ const getHorarios: any = computed(() => {
 
 // Propiedad computada para los intervalos de tiempo
 const timeIntervals = computed(() => {
-    return generateTimeIntervals(editedItem.start_time,editedItem.end_time, intervalMinutes.value);
+    return generateTimeIntervals(editedItem.start_time,editedItem.end_time, editedItem.intervalo);
 });
 
 
@@ -98,6 +98,7 @@ const cambiarRuta = ref(false);
 /* const startTime = ref('08:00');
 const endTime = ref('20:00'); */
 const intervalMinutes = ref(30);
+const intervalOptions = [30,45,60,90,120];
 
 
 
@@ -120,7 +121,7 @@ const editedItem = reactive({
     especialidad_id: '',
     start_time: '',
     end_time: '',
-    hour: '',
+    intervalo: Number(intervalMinutes.value),
 });
 
 const defaultItem = reactive({
@@ -129,13 +130,12 @@ const defaultItem = reactive({
     especialidad_id: '',
     start_time: '',
     end_time: '',
-    hour: '',
+    intervalo: Number(intervalMinutes.value),
 });
 
 const headers: any = reactive([
     { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
     { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
-    { title: 'Fecha', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
     { title: 'Hora de inicio', align: 'start', key: 'start_time', value: (item: any) => formatearHoraMinutos(item.start_time) },
     { title: 'Hora de fin', align: 'start', key: 'end_time', value: (item: any) => formatearHoraMinutos(item.end_time) },
 
@@ -327,7 +327,7 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                 Actualizar
             </v-btn>
             
-           <ModalTiempo/>
+        
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="mr-1 ml-auto">
@@ -376,12 +376,13 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                         item-value="id"
                                         hide-details 
                                         v-model="editedItem.medico_id" 
-                                        label="Doctor que se le asignara la consulta">
+                                        label="Doctor que se le asignara la especialidad">
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col cols="6">
                                     <v-text-field
                                         type="time"
+                                        :items="timeIntervals"
                                         variant="outlined"
                                         hide-details
                                         v-model="editedItem.start_time"
@@ -398,7 +399,17 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                         label="Hora que termina el turno"
                                     ></v-text-field>
                                 </v-col>
-                    
+                                
+                                    <v-col cols="6">
+                                    <v-select
+                                        type="number"
+                                        variant="outlined"
+                                        hide-details
+                                        :items="intervalOptions"
+                                        v-model="editedItem.intervalo"
+                                        label="Intervalo de tiempo('minutos')"
+                                    ></v-select>
+                                </v-col>
                     
                             </v-row>
                         </v-form>
@@ -439,9 +450,6 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                             </v-list-item>
                             <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
                                 <v-list-item-title>Eliminar</v-list-item-title>
-                            </v-list-item>
-                               <v-list-item value="intervalo" prepend-icon="mdi-time" @click="deleteItem(item)">
-                                <v-list-item-title>Editar intervalo de tiempo</v-list-item-title>
                             </v-list-item>
                         </v-list>
                     </v-menu>

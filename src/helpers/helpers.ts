@@ -21,11 +21,15 @@ export const formatearFecha = (fecha: string): string => {
     return fechaNueva.toLocaleTimeString('es-ES', opciones);
 };
  */
-export const formatearHoraMinutos = (fecha: string): string => {
-    const fechaNueva = new Date(fecha.replace(/-/g, '/')); // Reemplaza guiones por barras
-    if (isNaN(fechaNueva.getTime())) {
+export const formatearHoraMinutos = (hora: string): string => {
+    const horaRegex = /^\d{2}:\d{2}$/;
+    if (!horaRegex.test(hora)) {
         return 'Hora no válida';
     }
+    const [hours, minutes] = hora.split(':');
+    const fechaNueva = new Date();
+    fechaNueva.setHours(parseInt(hours, 10));
+    fechaNueva.setMinutes(parseInt(minutes, 10));
     const opciones: Intl.DateTimeFormatOptions = {
         hour: '2-digit',
         minute: '2-digit'
