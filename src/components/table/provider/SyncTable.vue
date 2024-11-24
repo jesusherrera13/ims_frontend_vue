@@ -107,8 +107,8 @@ function save() {
     console.log(editedItem.value);
 
     let response;
-    if (store.user.id) response = store.update();
-    else response = store.store();
+    if (store.user.id) response = store.update(editedItem.value);
+    else response = store.store(editedItem.value);
 
     response.then(() => {
         store.fetchUsers();
