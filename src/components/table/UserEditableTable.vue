@@ -58,8 +58,7 @@ const editedItem = ref({
     updated_at: '',
     password: '',
     password_confirmation: '',
-    rol_id: '',
-    verificar: false
+    rol_id: ''
 });
 
 const defaultItem = ref({
@@ -71,8 +70,7 @@ const defaultItem = ref({
     updated_at: '',
     password: '',
     password_confirmation: '',
-    rol_id: '',
-    verificar: false
+    rol_id: ''
 });
 
 const headers: any = ref([

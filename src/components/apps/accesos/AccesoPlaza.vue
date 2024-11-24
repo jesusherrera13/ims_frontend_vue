@@ -6,31 +6,14 @@ import { useAccesoPlazaStore } from '@/stores/apps/sistema/plaza';
 
 const store = useUserStore();
 const authStore = useAuthStore();
-const storeAccesoPlaza = useAccesoPlazaStore() as unknown as {
-    access_user_modules: any;
-    storeUserPlazas(id: string, user_plazas: (string | null)[]): unknown;
-    fetchAccesoPlazas(): unknown; empresas_plazas: Empresa[] 
-};
+const storeAccesoPlaza = useAccesoPlazaStore();
 
 onMounted(() => {
     storeAccesoPlaza.fetchAccesoPlazas();
 });
 
-interface Empresa {
-    business_name: any;
-    id: number;
-    company_name: string;
-    empresas: Empresa[];
-    plazas: Plaza[];
-}
-
-interface Plaza {
-    id: number;
-    nombre: string;
-}
-
-const getEmpresaPlaza = computed(() => { // se obtienen las empresas y plazas
-    let response: any[] = []; // se crea un arreglo para almacenar las empresas y plazas
+const getEmpresaPlaza: any = computed(() => { // se obtienen las empresas y plazas
+    let response = []; // se crea un arreglo para almacenar las empresas y plazas
 
     for (var i in storeAccesoPlaza.empresas_plazas) { // se recorre el arreglo de empresas y plazas
         var compania = storeAccesoPlaza.empresas_plazas[i]; // se asigna la empresa 
