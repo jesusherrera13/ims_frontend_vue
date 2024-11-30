@@ -126,6 +126,17 @@ const MainRoutes = {
             path: '/medicos',
             component: () => import('@/views/apps/medico/Medico.vue')
         },
+        // CITAS
+        {
+            name: 'citas',
+            path: '/cita',
+            component: () => import('@/views/apps/cita/Cita.vue')
+        },
+        {
+            name: 'horario',
+            path: '/horarios',
+            component: () => import('@/views/apps/horario/Horario.vue') // Corregir la ruta
+        },
         // Recetas
         {
             name: 'Recetas',
@@ -158,7 +169,7 @@ const MainRoutes = {
             name: 'Sincronizacion',
             path: '/cloud',
             component: () => import('@/views/dashboards/provider/Provider.vue')
-        },
+        }
     ]
 };
 

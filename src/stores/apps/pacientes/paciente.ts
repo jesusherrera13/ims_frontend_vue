@@ -14,7 +14,8 @@ export const usePacienteStore = defineStore({
             religion_id: '',
             f_nacimiento: '',
             domicilio: '',
-            foto_perfil: ''
+            foto_perfil: '',
+            nombre_completo: '',
         },
         religiones: [],
         params: {},
@@ -96,5 +97,6 @@ export const usePacienteStore = defineStore({
                 alert('Error fetching religiones: ' + error);
             }
         },
+        
     }
 });

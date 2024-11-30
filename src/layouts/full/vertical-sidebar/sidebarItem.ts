@@ -50,6 +50,7 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/empresas'
     },
+
     {
         title: 'Plazas',
         icon: BrandChromeIcon,
@@ -163,6 +164,16 @@ const sidebarItem: menu[] = [
         title: 'Médicos',
         icon: CircleIcon,
         to: '/medicos'
+    },
+    {
+        title: 'Citas',
+        icon: BrandChromeIcon,
+        to: '/cita'
+    },
+    {
+        title: 'Horarios',
+        icon: BrandChromeIcon,
+        to: '/horarios'
     },
     {
         title: 'Recetas',
