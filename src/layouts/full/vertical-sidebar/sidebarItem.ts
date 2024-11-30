@@ -176,6 +176,11 @@ const sidebarItem: menu[] = [
         to: '/horarios'
     },
     {
+        title: 'Recetas',
+        icon: CircleIcon,
+        to: '/recetas'
+    },
+    {
         title: 'Menu Level',
         icon: MenuIcon,
         to: '#',
