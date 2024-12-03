@@ -137,6 +137,12 @@ const MainRoutes = {
             path: '/horarios',
             component: () => import('@/views/apps/horario/Horario.vue') // Corregir la ruta
         },
+        // Recetas
+        {
+            name: 'Recetas',
+            path: '/recetas',
+            component: () => import('../views/apps/receta/Receta.vue')
+        },
 
         // ADMINISTRACIÓN
         {
