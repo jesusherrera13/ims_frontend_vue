@@ -10,7 +10,7 @@ const horario= reactive ({
 
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Establecer Horario e intervalos' : 'Editar Horario e intervalos';
+    return editedIndex.value === -1 ? 'Establecer Horario e intervalos' : 'Editar Horario e intervalos'; //si retorna -1 es porque no hay nada que editar
 });
 </script>
 

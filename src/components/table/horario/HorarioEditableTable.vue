@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { usePacienteStore } from '@/stores/apps/pacientes/paciente';
-import {useCitaStore } from '@/stores/apps/cita/cita'
 //import { useReligionStore } from '@/stores/apps/religiones/religion';
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 import { formatearFecha,formatearHoraMinutos } from '@/helpers/helpers';
-import ModalTiempo from '@/components/table/cita/ModalTiempo.vue';
+//import ModalTiempo from '@/components/table/cita/ModalTiempo.vue';
+import { useHorarioStore } from '@/stores/apps/horario/horario';
 
 import { PencilIcon, TrashIcon ,TimelineEventIcon } from 'vue-tabler-icons';
+/* import { start } from 'repl'; */
+/* import { type } from '../../../types/components/datatables/index';
+ */
 
-
-const store = useCitaStore();
+const store = useHorarioStore();
 //const ReligionStore = useReligionStore();
-const PacienteStore = usePacienteStore();
 const MedicoStore = useMedicoStore();
 const EspecialidadStore = useEspecialidadStore();
 
@@ -22,8 +22,7 @@ const EspecialidadStore = useEspecialidadStore();
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    store.fetchCitas();
-    store.fetchPaciente();
+    store.fetchHorario();
     MedicoStore.fetchMedicos();
     EspecialidadStore.fetchEspecialidades();
 
@@ -31,13 +30,13 @@ onMounted(async () => {
     //ReligionStore.fetchReligiones();
 });
 
-const getCitas: any = computed(() => {
-    return store.citas;
+const getHorarios: any = computed(() => {
+    return store.horarios;
 });
 
 // Propiedad computada para los intervalos de tiempo
 const timeIntervals = computed(() => {
-    return generateTimeIntervals(startTime.value, endTime.value, intervalMinutes.value);
+    return generateTimeIntervals(startTime.value,endTime.value, intervalo.value);
 });
 
 
@@ -54,7 +53,7 @@ const Especialidad: any = computed(() => {
     });
 }); 
 
-const Paciente: any = computed(() => {
+/* const Paciente: any = computed(() => {
     return store.pacientes.sort((a: any, b: any) => {
         const nameA = `${a.nombre} ${a.apellido1}`.toUpperCase(); // ignore upper and lowercase
         const nameB = `${b.nombre} ${b.apellido1}`.toUpperCase();
@@ -66,7 +65,7 @@ const Paciente: any = computed(() => {
         // names must be equal
         return 0;
     });
-});
+}); */
 
 const Medicos: any = computed(() => {
     return MedicoStore.medicos.sort((a: any, b: any) => {
@@ -87,9 +86,9 @@ const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
 const editedIndex = ref(-1);
-const items = ref(getCitas);
+const items = ref(getHorarios);
 
-const pacientes =ref(Paciente)
+
 const especialidades = ref(Especialidad)
 const medicos = ref(Medicos)
 
@@ -97,8 +96,10 @@ const deleteDialog = ref(false);
 const itemToDelete = ref(null);
 const cambiarRuta = ref(false);
 const startTime = ref('08:00');
-const endTime = ref('20:00');
+const endTime = ref('20:00'); 
+const intervalo = ref(30);
 const intervalMinutes = ref(30);
+const intervalOptions = [30,45,60,90,120];
 
 
 
@@ -117,28 +118,30 @@ const alert = ref<Alert>({
 
 const editedItem = reactive({
     id: null,
-    especialidad_id: '',
-    patient_id: '',
     medico_id: '',
-    date: '',
-    hour: '',
+    especialidad_id: '',
+    start_time: '',
+    end_time: '',
+    intervalo: Number(intervalMinutes.value),
+    vacaciones: false,
+
 });
 
 const defaultItem = reactive({
     id: null,
-    especialidad_id: '',
-    patient_id: '',
     medico_id: '',
-    date: '',
-    hour: '',
+    especialidad_id: '',
+    start_time: '',
+    end_time: '',
+    intervalo: Number(intervalMinutes.value),
+    vacaciones: false,
 });
 
 const headers: any = reactive([
     { title: 'Especialidad', align: 'start', key: 'especialidad_name' },
-    { title: 'Nombre Paciente', align: 'start', key: 'patient_name', value: (item: any) => `${item.patient_name} ${item.patient_lastname}` },
     { title: 'Doctor Asignado', align: 'start', key: 'medico_name' },
-    { title: 'Fecha', align: 'start', key: 'date', value: (item: any) => formatearFecha(item.date) },
-    { title: 'Hora', align: 'start', key: 'hour', value: (item: any) => formatearHoraMinutos(item.hour) },
+    { title: 'Hora de inicio', align: 'start', key: 'start_time', value: (item: any) => formatearHoraMinutos(item.start_time) },
+    { title: 'Hora de fin', align: 'start', key: 'end_time', value: (item: any) => formatearHoraMinutos(item.end_time) },
 
     //{ title: 'Foto de Perfil', align: 'start', key: 'foto_perfil' },
     { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
@@ -156,7 +159,7 @@ function showAlert(type: AlertType, message: string) {
 }
 
 function editItem(item: any) {
-    editedIndex.value = store.citas.indexOf(item as (typeof store.citas)[0])
+    editedIndex.value = store.horarios.indexOf(item as (typeof store.horarios)[0])
     Object.assign(editedItem, item);
     dialog.value = true;
 }
@@ -168,18 +171,18 @@ function deleteItem(item: any) {
 
 async function confirmDelete() {
     try {
-        Object.assign(store.cita, itemToDelete.value);
+        Object.assign(store.horario, itemToDelete.value);
         const response = store.delete();
 
         response.then(() => {
-            store.fetchCitas();
-            showAlert('success', 'Cita eliminada con éxito');
+            store.fetchHorario();
+            showAlert('success', 'Horario eliminad con éxito');
         }).catch(error => {
-            showAlert('error', 'Error al eliminar la cita');
+            showAlert('error', 'Error al eliminar el Horario');
         });
 
     } catch (error) {
-        showAlert('error', 'Error al eliminar la cita');
+        showAlert('error', 'Error al eliminar el Horario');
     } finally {
         deleteDialog.value = false;
         itemToDelete.value = null;
@@ -187,20 +190,20 @@ async function confirmDelete() {
 }
 
 function save() {
-    Object.assign(store.cita, editedItem);
+    Object.assign(store.horario, editedItem);
     let response;
-    if (store.cita.id) {
+    if (store.horario.id) {
         response = store.update();
-        showAlert('success', 'Cita actualizada con éxito');
+        showAlert('success', 'Horario actualizad con éxito');
     } else {
         response = store.store();
-        showAlert('success', 'Cita guardada con éxito');
+        showAlert('success', 'Horario guardado con éxito');
     }
 
     response.then(() => {
-        store.fetchCitas();
+        store.fetchHorario();
     }).catch(error => {
-        showAlert(error, 'Error al guardar la cita');
+        showAlert(error, 'Error al guardar el Horario');
     });
 
     Object.assign(editedItem, defaultItem);
@@ -222,11 +225,11 @@ function close() {
 }
 
 function refresh() {
-    store.fetchCitas();
+    store.fetchHorario();
 }
 
 const formTitle = computed(() => {
-    return editedIndex.value === -1 ? 'Nueva Cita' : 'Editar Cita';
+    return editedIndex.value === -1 ? 'Nuevo Horario' : 'Editar Horario';
 });
 
 
@@ -294,7 +297,7 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
         <v-card>
             <v-card-title class="headline">Confirmar Eliminación</v-card-title>
             <v-card-text>
-                ¿Estás seguro de que deseas eliminar esta cita?
+                ¿Estás seguro de que deseas eliminar este Horario?
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -328,11 +331,11 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                 Actualizar
             </v-btn>
             
-           <ModalTiempo/>
+        
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="mr-1 ml-auto">
-                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva Cita
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nuevo Horario
                     </v-btn>
                     
                 </template>
@@ -347,9 +350,9 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                 <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined" 
-                                       :items="especialidades"
-                                       item-title="nombre"
-                                       item-value="id"
+                                    :items="especialidades"
+                                    item-title="nombre"
+                                    item-value="id"
                                         hide-details 
                                         v-model="editedItem.especialidad_id" 
                                         label="Especialidad"
@@ -357,18 +360,18 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                         
                                     </v-autocomplete>
                                 </v-col>
-                                <v-col cols="12">
+                        <!--      <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined" 
-                                       :items="pacientes"
-                                       item-title="nombre"
-                                       item-value="id"
+                                    :items="pacientes"
+                                    item-title="nombre"
+                                    item-value="id"
                                         hide-details 
                                         v-model="editedItem.patient_id" 
                                         label="Paciente">
                                     </v-autocomplete>
-                                </v-col>
-                              
+                                </v-col> -->
+                            
                                 <v-col cols="12">
                                     <v-autocomplete
                                         variant="outlined" 
@@ -377,39 +380,55 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                                         item-value="id"
                                         hide-details 
                                         v-model="editedItem.medico_id" 
-                                        label="Doctor que se le asignara la consulta">
+                                        label="Doctor que se le asignara la especialidad">
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col cols="6">
-                                    <v-text-field
-                                        type="date"
-                                        variant="outlined"
-                                        hide-details
-                                        v-model="editedItem.date"
-                                        label="Fecha de la Cita"
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-select
+                                    <v-autocomplete
                                         :items="timeIntervals"
                                         variant="outlined"
                                         hide-details
-                                        v-model="editedItem.hour"
-                                        label="Hora de la Cita"
-                                    ></v-select>
+                                        v-model="editedItem.start_time"
+                                        label="Hora que empieza el turno"
+                                    ></v-autocomplete>
                                 </v-col>
-                    
+                                <v-col cols="6">
+                                    <v-autocomplete
+                                        :items="timeIntervals"
+                                        variant="outlined"
+                                        hide-details
+                                        v-model="editedItem.end_time"
+                                        label="Hora que termina el turno"
+                                    ></v-autocomplete>
+                                </v-col>
+                                
+                                    <v-col cols="6">
+                                    <v-autocomplete
+                                        variant="outlined"
+                                        hide-details
+                                        :items="intervalOptions"
+                                        v-model="editedItem.intervalo"
+                                        label="Intervalo de tiempo('minutos')"
+                                    ></v-autocomplete>
+                                </v-col>
+
+                                <v-col cols="12">
+                                    <v-checkbox
+                                        v-model="editedItem.vacaciones"
+                                        label="¿Está de vacaciones?"
+                                    ></v-checkbox>
+                                </v-col>
                     
                             </v-row>
                         </v-form>
                     </v-card-text>
 
                     <v-card-actions class="pa-4">
-                        <v-btn v-if="editedItem.patient_id === ''" color="primary" @click="cambiarRuta = true">Registrar Nuevo Paciente</v-btn>
+                        <v-btn v-if="editedItem.especialidad_id === ''" color="primary" @click="cambiarRuta = true">Registrar Nuevo Paciente</v-btn>
                         <v-spacer></v-spacer>
-                       
+                    
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn color="secondary" :disabled="editedItem.patient_id == '' || editedItem.medico_id == '' " variant="flat" @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.especialidad_id == '' || editedItem.medico_id == '' " variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>

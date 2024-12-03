@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import axiosClient from '@/axios';
 
-export const useCitaStore = defineStore({
+export const useHorarioStore = defineStore({
     id: 'Horarios',
     state: () => ({
         horarios: [],
@@ -10,6 +10,10 @@ export const useCitaStore = defineStore({
             id: '',
             start_time: '',
             end_time: '',
+            medico_id: '',
+            especialidad_id: '',
+            intervalo: 30,
+            vacaciones: false,
         },
         especialidades: [],
         medicos: [],
@@ -18,7 +22,7 @@ export const useCitaStore = defineStore({
     }),
     getters: {},
     actions: {
-        async fetchCitas() {
+        async fetchHorario() {
             this.is_loading = true;
             try {
                 const response = await axiosClient.get(`/horario`, { params: this.params });
@@ -30,9 +34,9 @@ export const useCitaStore = defineStore({
             }
         },
 
-        async fetchMedicoEspecialistaPorHorario(Medico:any, Horario:any, Especialidad:any) {
+        async fetchMedicoEspecialistaPorHorario(Medico:any, Especialidad:any) {
             try {
-                const response = await axiosClient.get(`/cita/${Medico}/${Horario}/${Especialidad}`);
+                const response = await axiosClient.get(`/horario/${Medico}/especialidades/${Especialidad}/horarios`);
                 this.horarios = response.data;
             } catch (error) {
                 console.error('Error fetching horarios:', error);
@@ -70,7 +74,7 @@ export const useCitaStore = defineStore({
         async delete() {
             this.is_loading = true;
             try {
-                const response = await axiosClient.delete(`/cita/${this.horario.id}`);
+                const response = await axiosClient.delete(`/horario/${this.horario.id}`);
                 this.is_loading = false;
             } catch (error) {
                 alert(error);

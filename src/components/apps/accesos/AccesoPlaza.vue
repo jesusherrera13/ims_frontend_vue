@@ -6,7 +6,11 @@ import { useAccesoPlazaStore } from '@/stores/apps/sistema/plaza';
 
 const store = useUserStore();
 const authStore = useAuthStore();
-const storeAccesoPlaza = useAccesoPlazaStore();
+const storeAccesoPlaza = useAccesoPlazaStore() as unknown as {
+    access_user_modules: any;
+    storeUserPlazas(id: string, user_plazas: (string | null)[]): unknown;
+    fetchAccesoPlazas(): unknown; empresas_plazas: Empresa[] 
+};
 
 onMounted(() => {
     storeAccesoPlaza.fetchAccesoPlazas();
