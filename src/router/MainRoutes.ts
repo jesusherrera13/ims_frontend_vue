@@ -71,6 +71,7 @@ const MainRoutes = {
             path: '/empresa/profile/:id',
             component: () => import('@/views/apps/empresa-profile/Profile.vue')
         },
+        // LOCACIONES
         {
             name: 'Paises',
             path: '/paises',
@@ -97,10 +98,52 @@ const MainRoutes = {
             component: () => import('@/views/apps/medicamentos/Medicamentos.vue')
         },
         {
-            name: 'Metodo de pago',
-            path: '/metodoP',
+            name: 'Método de pago',
+            path: '/metodo-de-pago',
             component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
         },
+        // RELIGION
+        {
+            name: 'Religiones',
+            path: '/religiones',
+            component: () => import('@/views/apps/religion/Religion.vue')
+        },
+        // PACIENTES
+        {
+            name: 'Pacientes',
+            path: '/pacientes',
+            component: () => import('@/views/apps/paciente/Paciente.vue')
+        },
+        // ESPECIALIDAD
+        {
+            name: 'Especialidad',
+            path: '/especialidad',
+            component: () => import('@/views/apps/especialidad/Especialidad.vue')
+        },
+        // MÉDICOS
+        {
+            name: 'Medicos',
+            path: '/medicos',
+            component: () => import('@/views/apps/medico/Medico.vue')
+        },
+        // CITAS
+        {
+            name: 'citas',
+            path: '/cita',
+            component: () => import('@/views/apps/cita/Cita.vue')
+        },
+        {
+            name: 'horario',
+            path: '/horarios',
+            component: () => import('@/views/apps/horario/Horario.vue') // Corregir la ruta
+        },
+        // Recetas
+        {
+            name: 'Recetas',
+            path: '/recetas',
+            component: () => import('../views/apps/receta/Receta.vue')
+        },
+
         {
             name: 'Citas efectivas',
             path: '/citasE',

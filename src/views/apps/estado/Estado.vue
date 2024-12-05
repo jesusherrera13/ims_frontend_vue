@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import EditableTable from '@/components/table/locaciones/EstadoEditableTable.vue'
 // theme breadcrumb
-const page = ref({ title: 'Paises' });
+const page = ref({ title: 'Estados' });
 
 const breadcrumbs = ref([
     {

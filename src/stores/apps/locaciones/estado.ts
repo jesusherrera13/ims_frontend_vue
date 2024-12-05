@@ -35,7 +35,7 @@ export const useEstadoStore = defineStore({
             }
         },
 
-        async fetchEstadosPorPais(paisId: any) {
+        async fetchEstadosPorPais(paisId:any) {
             try {
                 const response = await axiosClient.get(`/pais/${paisId}/estados`);
                 this.estados = response.data;

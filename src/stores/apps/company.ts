@@ -92,6 +92,8 @@ export const useCompanyStore = defineStore({
             }
         },
 
+  
+
          async fetchPais() {
             try {
                 const response = await axiosClient.get('/pais');

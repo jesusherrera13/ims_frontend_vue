@@ -1,37 +1,47 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useCiudadStore } from '@/stores/apps/ciudad';
+import { useCiudadStore } from '@/stores/apps/locaciones/ciudad';
+
+import { useMunicipioStore } from '@/stores/apps/locaciones/municipio';
+
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
 const store = useCiudadStore();
-const itemsPerPage = ref(5);
-const page = ref(1);
+const MunicipioStore = useMunicipioStore();
+
 const deleteDialog = ref(false);
 const itemToDelete = ref(null);
 
 type AlertType = 'success' | 'error' | 'info' | 'warning' | undefined;
 
 onMounted(async () => {
-    await store.fetchCiudades();
+    store.fetchCiudades();
+    MunicipioStore.fetchMunicipios();
 });
 
 const getCiudades: any = computed(() => {
-    return store.ciudades.filter((ciudad: any) => {
-        return (ciudad.id + ' ' + ciudad.nombre).toLowerCase().includes(search.value.toLowerCase());
-    });
+    return store.ciudades;
 });
 
-const paginatedList = computed(() => {
-    const start = (page.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return getCiudades.value.slice(start, end);
+const getMunicipios: any = computed(() => {
+    return MunicipioStore.municipios.sort((a: any, b: any) => {
+        const nameA = a.nombre.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.nombre.toUpperCase(); // ignore upper and lowercase
+
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+
+        // names must be equal
+        return 0;
+    });
 });
 
 const valid = ref(true);
 const dialog = ref(false);
 const search = ref('');
-const rolesbg = ref(['primary', 'secondary', 'error', 'success', 'warning']);
 const editedIndex = ref(-1);
+const items = ref(getCiudades);
+const municipios = ref(getMunicipios);
 
 interface Alert {
     show: boolean;
@@ -48,20 +58,20 @@ const alert = ref<Alert>({
 const editedItem = ref({
     id: '',
     nombre: '',
-    municipio_id: ''
+    municipio_id: null
 });
 
 const defaultItem = ref({
     id: '',
     nombre: '',
-    municipio_id: ''
+    municipio_id: null
 });
 
-watch(getCiudades, (newList) => {
-    if ((page.value - 1) * itemsPerPage.value >= newList.length) {
-        page.value = 1;
-    }
-});
+const headers: any = ref([
+    { title: 'Ciudad', align: 'start', key: 'nombre' },
+    { title: 'Municipio', align: 'start', key: 'nombre_municipio' },
+    { title: 'Acciones', align: 'end', key: 'actions', sortable: false }
+]);
 
 function showAlert(type: AlertType, message: string) {
     alert.value = {
@@ -75,6 +85,7 @@ function showAlert(type: AlertType, message: string) {
 }
 
 function editItem(item: any) {
+    editedIndex.value = store.municipios.indexOf(item as (typeof store.municipios)[0])
     editedItem.value = Object.assign({}, item);
     dialog.value = true;
 }
@@ -139,6 +150,10 @@ function close() {
     }, 300);
 }
 
+function refresh() {
+    store.fetchCiudades();
+}
+
 const formTitle = computed(() => {
     return editedIndex.value === -1 ? 'Nueva Ciudad' : 'Editar Ciudad';
 });
@@ -184,13 +199,17 @@ const formTitle = computed(() => {
 
     <v-row>
         <v-col cols="12" lg="4" md="6">
-            <v-text-field density="compact" v-model="search" label="Buscar Ciudades" hide-details variant="outlined"></v-text-field>
+            <v-text-field density="compact" v-model="search" label="Buscar" hide-details variant="outlined"></v-text-field>
         </v-col>
         <v-col cols="12" lg="8" md="6" class="text-right">
-            <v-dialog v-model="dialog" max-width="500">
+            <v-btn color="secondary" flat class="mr-1" @click="refresh">
+                <v-icon class="mr-2">mdi-refresh</v-icon>
+                Actualizar
+            </v-btn>
+            <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
-                    <v-btn color="primary" v-bind="props" flat class="ml-auto" @click="openDialog">
-                        <v-icon class="mr-2">mdi-plus-circle-outline</v-icon>Agregar Ciudad
+                    <v-btn color="primary" v-bind="props" flat class="ml-auto">
+                        <v-icon class="mr-2">mdi-account-multiple-plus</v-icon>Nueva ciudad
                     </v-btn>
                 </template>
                 <v-card>
@@ -201,21 +220,24 @@ const formTitle = computed(() => {
                     <v-card-text>
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-row>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
-                                        variant="outlined"
-                                        hide-details
-                                        v-model="editedItem.nombre"
-                                        label="Nombre"
-                                    ></v-text-field>
+                                <v-col cols="12">
+                                    <v-text-field 
+                                        variant="outlined" 
+                                        hide-details 
+                                        v-model="editedItem.nombre" 
+                                        label="Ciudad">
+                                    </v-text-field>
                                 </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field
+                                <v-col cols="12" sm="12">
+                                    <v-autocomplete
                                         variant="outlined"
                                         hide-details
+                                        :items="municipios"
+                                        item-title="nombre"
+                                        item-value="id"
                                         v-model="editedItem.municipio_id"
-                                        label="Id Municipio"
-                                    ></v-text-field>
+                                        label="Municipio"
+                                    ></v-autocomplete>
                                 </v-col>
                             </v-row>
                         </v-form>
@@ -224,11 +246,7 @@ const formTitle = computed(() => {
                     <v-card-actions class="pa-4">
                         <v-spacer></v-spacer>
                         <v-btn color="error" @click="close">Cancelar</v-btn>
-                        <v-btn
-                            color="secondary"
-                            :disabled="editedItem.nombre == '' || editedItem.municipio_id == ''"
-                            variant="flat"
-                            @click="save"
+                        <v-btn color="secondary" :disabled="editedItem.nombre == '' || editedItem.municipio_id == ''" variant="flat" @click="save"
                             >Guardar</v-btn
                         >
                     </v-card-actions>
@@ -236,57 +254,34 @@ const formTitle = computed(() => {
             </v-dialog>
         </v-col>
     </v-row>
-    <v-table class="mt-5" :items-per-page="itemsPerPage" :page.sync="page">
-        <thead>
-            <tr>
-                <th class="text-subtitle-1 font-weight-semibold">Id</th>
-                <th class="text-subtitle-1 font-weight-semibold">Nombre</th>
-                <th class="text-subtitle-1 font-weight-semibold">Id Municipio</th>
-                <th class="text-subtitle-1 font-weight-semibold">Fecha de creacion</th>
-                <th class="text-subtitle-1 font-weight-semibold">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in paginatedList" :key="item.id">
-                <td class="text-subtitle-1">{{ item.id }}</td>
-                <td>
-                    <div class=" py-4">
-                        <div>
-                            <v-img :src="item.avatar" width="45px" class="rounded-circle img-fluid"></v-img>
-                        </div>
+    <v-row>
+        <v-col>
+            <v-data-table
+                items-per-page="25"
+                :headers="headers"
+                :items="items"
+                :search="search"
+                class="border rounded-md"
+                density="compact"
+            >
+                <template v-slot:item.actions="{ item }">
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon="mdi-dots-vertical" v-bind="props" variant="plain"></v-btn>
+                        </template>
 
-                        <div class="ml-5">
-                            <h4 class="text-h6">{{ item.nombre }}</h4>
-                        </div>
-                    </div>
-                </td>
-                <td class="text-subtitle-1">{{ item.municipio_id }}</td>
-                <td class="text-subtitle-1">{{ item.created_at }}</td>
-                <td>
-                    <div class="d-flex align-center">
-                        <v-tooltip text="Editar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="editItem(item)" v-bind="props"
-                                    ><PencilIcon stroke-width="1.5" size="20" class="text-primary"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                        <v-tooltip text="Eliminar">
-                            <template v-slot:activator="{ props }">
-                                <v-btn icon flat @click="deleteItem(item)" v-bind="props"
-                                    ><TrashIcon stroke-width="1.5" size="20" class="text-error"
-                                /></v-btn>
-                            </template>
-                        </v-tooltip>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-        <template v-slot:bottom>
-            <div class="justify-end">
-                <v-pagination v-model="page" :length="Math.ceil(getCiudades.length / itemsPerPage)" style="justify-content: end!important;" />
-            </div>
-        </template>
-    </v-table>
+                        <v-list density="compact" nav>
+                            <v-list-item value="editar" prepend-icon="mdi-square-edit-outline" @click="editItem(item)">
+                                <v-list-item-title>Editar</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item value="eliminar" prepend-icon="mdi-delete" @click="deleteItem(item)">
+                                <v-list-item-title>Eliminar</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </template>
+            </v-data-table>
+        </v-col>
+    </v-row>
     <v-overlay v-model="store.is_loading"></v-overlay>
 </template>

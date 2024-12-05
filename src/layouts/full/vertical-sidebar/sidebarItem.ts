@@ -50,6 +50,7 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/empresas'
     },
+
     {
         title: 'Plazas',
         icon: BrandChromeIcon,
@@ -148,6 +149,41 @@ const sidebarItem: menu[] = [
                 to: '/ciudades'
             }
         ]
+    },
+    {
+        title: 'Religiónes',
+        icon: CircleIcon,
+        to: '/religiones'
+    },
+    {
+        title: 'Pacientes',
+        icon: CircleIcon,
+        to: '/pacientes'
+    },
+    {
+        title: 'Especialidades',
+        icon: CircleIcon,
+        to: '/especialidades'
+    },
+    {
+        title: 'Médicos',
+        icon: CircleIcon,
+        to: '/medicos'
+    },
+    {
+        title: 'Citas',
+        icon: BrandChromeIcon,
+        to: '/cita'
+    },
+    {
+        title: 'Horarios',
+        icon: BrandChromeIcon,
+        to: '/horarios'
+    },
+    {
+        title: 'Recetas',
+        icon: CircleIcon,
+        to: '/recetas'
     },
     {
         title: 'Menu Level',
