@@ -101,6 +101,11 @@ const MainRoutes = {
             path: '/metodoP',
             component: () => import('@/views/apps/metodo-pago/Metodo-pago.vue')
         },
+        {
+            name: 'Citas efectivas',
+            path: '/citasE',
+            component: () => import('@/views/apps/citas_efectivas/CitasE.vue')
+        },
         // ADMINISTRACIÓN
         {
             name: 'Empleados',

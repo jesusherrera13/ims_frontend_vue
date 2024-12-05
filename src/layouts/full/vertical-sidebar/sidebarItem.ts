@@ -70,6 +70,11 @@ const sidebarItem: menu[] = [
         icon: BrandChromeIcon,
         to: '/metodoP'
     },
+    {
+        title: 'Citas efectivas',
+        icon: BrandChromeIcon,
+        to: '/citasE'
+    },
     { header: 'Sistema' },
     {
         title: 'Usuarios',
