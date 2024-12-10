@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import CitasEEditableTable from '@/components/table/sistema/CitasEEditableTable.vue';
+import CitasEEditableTable from '@/components/table/sistema/CitasEfectivasEditableTable.vue';
 // theme breadcrumb
 const page = ref({ title: 'Lista de citas' });
 

@@ -147,7 +147,7 @@ const MainRoutes = {
         {
             name: 'Citas efectivas',
             path: '/citasE',
-            component: () => import('@/views/apps/citas_efectivas/CitasE.vue')
+            component: () => import('@/views/apps/citas_efectivas/CitasEfectivas.vue')
         },
         // ADMINISTRACIÓN
         {

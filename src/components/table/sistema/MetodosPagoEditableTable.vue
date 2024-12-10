@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useMetodoPStore } from '@/stores/apps/metodoP';
+import { useMetodoPStore } from '@/stores/apps/metodoPago';
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 
 const store = useMetodoPStore();

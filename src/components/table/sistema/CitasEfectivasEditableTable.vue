@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useCitasEStore } from '@/stores/apps/citasE';
+import { useCitasEStore } from '@/stores/apps/citasEfectivas';
 import { PencilIcon, TrashIcon } from 'vue-tabler-icons';
 import axios from 'axios';
 

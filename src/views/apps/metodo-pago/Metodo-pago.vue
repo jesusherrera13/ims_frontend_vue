@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import MetodosPEditableTable from '@/components/table/sistema/MetodosPEditableTable.vue';
+import MetodosPEditableTable from '@/components/table/sistema/MetodosPagoEditableTable.vue';
 // theme breadcrumb
 const page = ref({ title: 'Lista de metodos de pago' });
 
