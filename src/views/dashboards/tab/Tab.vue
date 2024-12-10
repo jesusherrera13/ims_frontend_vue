@@ -7,6 +7,7 @@ import { useAuthMenuStore } from '@/stores/authMenu';
 // import Rol from './apps/user/Rol.vue';
 import User from '@/views/apps/user/User.vue';
 import Rol from '@/views/apps/user/Rol.vue';
+import Paciente from '@/views/apps/paciente/Paciente.vue';
 
 const authMenuStore = useAuthMenuStore();
 
@@ -73,11 +74,7 @@ const getItems: any = computed(() => {
         }
     });
 
-    console.log(m);
-
     return m;
-
-    // return authStore.auth_sidebar;
 });
 
 const toggle = (item: any) => {
@@ -131,8 +128,9 @@ const toggle = (item: any) => {
                 <v-window-item value="rol">
                     <Rol />
                 </v-window-item>
-                <v-window-item value="responsables"> Responsables </v-window-item>
-                <v-window-item value="productos"> Productos </v-window-item>
+                <v-window-item value="paciente">
+                    <Paciente />
+                </v-window-item>
             </v-window>
         </v-card-text>
     </v-card>

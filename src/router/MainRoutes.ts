@@ -149,6 +149,11 @@ const MainRoutes = {
             component: () => import('../views/apps/receta/Receta.vue')
         },
 
+        {
+            name: 'Citas efectivas',
+            path: '/citasE',
+            component: () => import('@/views/apps/citas_efectivas/CitasEfectivas.vue')
+        },
         // ADMINISTRACIÓN
         {
             name: 'Empleados',
