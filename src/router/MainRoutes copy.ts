@@ -9,12 +9,7 @@ const MainRoutes = {
         {
             name: 'Dashboard',
             path: '/',
-            redirect: '/dashboards/tab'
-        },
-        {
-            name: 'Tab',
-            path: '/dashboards/tab',
-            component: () => import('@/views/dashboards/tab/Tab.vue')
+            component: () => import('@/views/dashboards/classic/Classic.vue')
         },
         {
             name: 'Classic',
