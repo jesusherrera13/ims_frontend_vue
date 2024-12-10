@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 // common components
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
-import MetodosPEditableTable from '@/components/table/sistema/MetodosPagoEditableTable.vue';
+import CitasEEditableTable from '@/components/table/sistema/CitasEfectivasEditableTable.vue';
 // theme breadcrumb
-const page = ref({ title: 'Lista de metodos de pago' });
+const page = ref({ title: 'Lista de citas' });
 
 const breadcrumbs = ref([
     {
-        text: 'Metodos de pago disponibles',
+        text: 'Citas programadas',
         disabled: true,
         href: '#'
     }
@@ -19,7 +19,7 @@ const breadcrumbs = ref([
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
     <v-card elevation="10">
         <v-card-text>
-            <MetodosPEditableTable />
+            <CitasEEditableTable />
         </v-card-text>
     </v-card>
 </template>
