@@ -34,6 +34,19 @@ export const useAuthMenuStore = defineStore({
                         visible: false
                     }
                 ]
+            },
+            {
+                title: 'Sistemas',
+                icon: 'mdi-account-multiple-outline',
+                children: [
+                    {
+                        key: 'paciente',
+                        title: 'Pacientes',
+                        icon: 'mdi-cog-outline',
+                        to: '/pacientes',
+                        visible: false
+                    }
+                ]
             }
         ],
         error: false,
