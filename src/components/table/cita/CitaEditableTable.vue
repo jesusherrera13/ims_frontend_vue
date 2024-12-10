@@ -7,7 +7,7 @@ import {useCitaStore } from '@/stores/apps/cita/cita'
 import { useMedicoStore } from '@/stores/apps/medicos/medico';
 import { useEspecialidadStore } from '@/stores/apps/especialidades/especialidad';
 import { formatearFecha,formatearHoraMinutos } from '@/helpers/helpers';
-import ModalTiempo from './ModalTiempo.vue';
+//import ModalTiempo from './ModalTiempo.vue';
 
 import { PencilIcon, TrashIcon ,TimelineEventIcon } from 'vue-tabler-icons';
 
@@ -328,7 +328,7 @@ function generateTimeIntervals(start: string, end: string, interval: number) {
                 Actualizar
             </v-btn>
             
-           <ModalTiempo/>
+            
             <v-dialog v-model="dialog" max-width="500" persistent>
                 <template v-slot:activator="{ props }">
                     <v-btn color="primary" v-bind="props" flat class="mr-1 ml-auto">
