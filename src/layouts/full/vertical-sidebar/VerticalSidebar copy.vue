@@ -9,14 +9,14 @@ import NavItem from './NavItem/index.vue';
 import NavCollapse from './NavCollapse/NavCollapse.vue';
 import Logo from '../logo/Logo.vue';
 import { useAuthStore } from '@/stores/auth';
-import { useAuthMenuStore } from '@/stores/authMenu';
 import { MenuIcon, BrandChromeIcon } from 'vue-tabler-icons';
 
 const customizer = useCustomizerStore();
 const authStore = useAuthStore();
-const authMenuStore = useAuthMenuStore();
 
 onMounted(() => {
+    // authStore.userModules(authStore.user.id);
+    console.log(9);
     authStore.authSideBar(authStore.user.id);
 });
 
@@ -72,100 +72,7 @@ const getAuthSideBar: any = computed(() => {
     // return authStore.auth_sidebar;
 });
 
-const getItems: any = computed(() => {
-    return authMenuStore.items.map((item: any) => {
-        var menu = { ...item };
-
-        if (menu.parent_id) {
-            if (menu.children) menu.icon = MenuIcon;
-            else menu.icon = BrandChromeIcon;
-        } else {
-        }
-
-        console.log(menu);
-
-        return menu;
-        // return {...item, icon:}
-    });
-
-    // return authStore.auth_sidebar;
-});
-
-const getDashboards: any = computed(() => {
-    return [
-        {
-            id: 1,
-            header: 'Dashboards',
-            route: null,
-            icon: null,
-            orden: null,
-            parent_id: null
-        },
-        {
-            id: 2,
-            title: 'Analythical',
-            to: '/',
-            icon: {
-                name: BrandChromeIcon,
-                props: {
-                    size: {
-                        type: [null, null],
-                        default: 24
-                    }
-                }
-            },
-            orden: null,
-            parent_id: 1
-        }
-    ];
-});
-
 const sidebarMenu = ref(getSideBarMenu);
-const dashboards = ref(getDashboards);
-
-const open = ref(['Users']);
-const admins = ref([
-    ['Management', 'mdi-account-multiple-outline'],
-    ['Settings', 'mdi-cog-outline']
-]);
-
-const cruds = ref([
-    ['Create', 'mdi-plus-outline'],
-    ['Read', 'mdi-file-outline'],
-    ['Update', 'mdi-update'],
-    ['Delete', 'mdi-delete']
-]);
-
-const menu = ref([
-    {
-        title: 'Admin',
-        icon: 'mdi-account-multiple-outline',
-        children: [
-            {
-                key: 'usuarios',
-                title: 'Usuarios',
-                icon: 'mdi-cog-outline',
-                to: '/roles'
-            },
-            {
-                key: 'roles',
-                title: 'Roles',
-                icon: 'mdi-cog-outline',
-                to: '/roles'
-            },
-            {
-                key: 'regimen',
-                title: 'Régimen',
-                icon: 'mdi-update',
-                to: '/regimen'
-            }
-        ]
-    }
-]);
-
-const toggle = (item: any) => {
-    item.visible = true;
-};
 </script>
 
 <template>
@@ -200,25 +107,16 @@ const toggle = (item: any) => {
                     </div>
                 </div>
             </div>
-
-            <v-list v-model:opened="open">
-                <v-list-item prepend-icon="mdi-home" title="Home"></v-list-item>
-
-                <template v-for="(item, i) in getItems">
-                    <v-list-group :value="item.title">
-                        <template v-slot:activator="{ props }">
-                            <!-- <v-list-item v-bind="props" :title="item.title"></v-list-item> -->
-                            <v-list-item v-bind="props" :prepend-icon="item.icon" :title="item.title"></v-list-item>
-                        </template>
-                        <v-list-item
-                            v-for="(item2, i2) in item.children"
-                            :key="i"
-                            :prepend-icon="item2.icon"
-                            :title="item2.title"
-                            :value="item.key"
-                            @click="toggle(item2)"
-                        ></v-list-item>
-                    </v-list-group>
+            <v-list class="py-6 px-4">
+                <!---Menu Loop -->
+                <template v-for="(item, i) in getAuthSideBar">
+                    <!---Item Sub Header -->
+                    <NavGroup :item="item" v-if="item.header" :key="item.title" />
+                    <!---If Has Child -->
+                    <NavCollapse class="leftPadding" :item="item" :level="0" v-else-if="item.children" />
+                    <!---Single Item-->
+                    <NavItem :item="item" v-else class="leftPadding" />
+                    <!---End Single Item-->
                 </template>
             </v-list>
         </perfect-scrollbar>
