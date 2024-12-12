@@ -9,6 +9,8 @@
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
     "dependencies": {
+        "@mdi/js": "^7.4.47",
+        "@mdi/react": "^1.6.1",
         "@tiptap/pm": "2.2.2",
         "@tiptap/starter-kit": "2.2.2",
         "@tiptap/vue-3": "2.2.2",
