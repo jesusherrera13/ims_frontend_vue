@@ -22,30 +22,99 @@ export const useAuthMenuStore = defineStore({
                     {
                         key: 'usuarios',
                         title: 'Usuarios',
-                        icon: 'mdi-cog-outline',
+                        icon: 'mdi-account-multiple',
                         to: '/roles',
                         visible: false
                     },
                     {
                         key: 'rol',
                         title: 'Roles',
-                        icon: 'mdi-cog-outline',
+                        icon: 'mdi-script-outline',
                         to: '/roles',
                         visible: false
-                    }
+                    },
+                    {
+                        key: 'regimen',
+                        title: 'Régimen',
+                        icon: 'mdi-list-box-outline',
+                        to: '/regimen',
+                        visible: false
+                    },
+                    {
+                        key: 'perfiles',
+                        title: 'Perfiles',
+                        icon: 'mdi-account',
+                        to: '/perfiles',
+                        visible: false
+                    },
                 ]
             },
             {
                 title: 'Sistemas',
-                icon: 'mdi-account-multiple-outline',
+                icon: 'mdi-desktop-tower-monitor',
                 children: [
                     {
                         key: 'paciente',
                         title: 'Pacientes',
-                        icon: 'mdi-cog-outline',
+                        icon: 'mdi-account-injury',
                         to: '/pacientes',
                         visible: false
-                    }
+                    },
+                    {
+                        key: 'medicos',
+                        title: 'Médicos',
+                        icon: 'mdi-card-account-details',
+                        to: '/medicos',
+                        visible: false
+                    },
+                    {
+                        key: 'recetas',
+                        title: 'Recetas',
+                        icon: 'mdi-invoice-list-outline',
+                        to: '/recetas',
+                        visible: false
+                    },
+                    {
+                        key: 'citas',
+                        title: 'Citas',
+                        icon: 'mdi-calendar-range',
+                        to: '/cita',
+                        visible: false
+                    },
+                ]
+            },
+            {
+                title: 'Configuración',
+                icon: 'mdi-cog-outline',
+                children: [
+                    {
+                        key: 'metodo-pago',
+                        title: 'Metodos de pago',
+                        icon: 'mdi-cash-sync',
+                        to: '/metodo-pago',
+                        visible: false
+                    },
+                    {
+                        key: 'empresas',
+                        title: 'Empresas',
+                        icon: 'mdi-domain',
+                        to: '/empresas',
+                        visible: false
+                    },
+                    {
+                        key: 'plazas',
+                        title: 'Plazas',
+                        icon: 'mdi-office-building',
+                        to: '/plazas',
+                        visible: false
+                    },
+                    {
+                        key: 'departamentos',
+                        title: 'Departamentos',
+                        icon: 'mdi-office-building-outline',
+                        to: '/departamentos',
+                        visible: false
+                    },
                 ]
             }
         ],
